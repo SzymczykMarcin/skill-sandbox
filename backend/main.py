@@ -14,6 +14,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from backend.exercise_grader import ExerciseGrader
@@ -277,6 +278,7 @@ rate_limiter: RateLimiter = create_rate_limiter(rate_limiter_settings)
 rate_limit_key_builder: RateLimitKeyBuilder = load_rate_limit_key_builder_from_env()
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory=repo_root / "frontend/static"), name="static")
 metrics_store = MetricsStore()
 error_reporter = ErrorReporter()
 

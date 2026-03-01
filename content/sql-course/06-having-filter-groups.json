@@ -1,0 +1,27 @@
+{
+  "id": "sql-006",
+  "slug": "having-filter-groups",
+  "title": "HAVING: filtrowanie grup",
+  "level": "intermediate",
+  "order": 6,
+  "intro": "Filtruj wyniki po agregacji.",
+  "explanation": "HAVING działa na grupach, a WHERE na pojedynczych wierszach. Najpierw można użyć WHERE, potem GROUP BY i HAVING.",
+  "examples": [
+    {
+      "query": "SELECT customer_id, COUNT(*) AS total FROM orders GROUP BY customer_id HAVING COUNT(*) >= 5;",
+      "description": "Klienci z co najmniej 5 zamówieniami."
+    },
+    {
+      "query": "SELECT category_id, AVG(price) AS avg_price FROM products GROUP BY category_id HAVING AVG(price) > 100;",
+      "description": "Kategorie ze średnią ceną powyżej 100."
+    }
+  ],
+  "exercise": "Znajdź autorów z więcej niż 3 artykułami w tabeli articles.",
+  "solutionHints": [
+    "Agreguj po author_id.",
+    "W HAVING użyj COUNT(*) > 3."
+  ],
+  "expectedQueryPatterns": [
+    "GROUP BY author_id HAVING COUNT\\(\\*\\) > 3"
+  ]
+}

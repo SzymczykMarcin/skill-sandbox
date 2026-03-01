@@ -1,0 +1,27 @@
+{
+  "id": "sql-012",
+  "slug": "window-functions-running-total",
+  "title": "Funkcje okna: sumy narastające",
+  "level": "intermediate",
+  "order": 12,
+  "intro": "Licz running total i moving metrics.",
+  "explanation": "SUM() OVER z ORDER BY wylicza sumę narastającą. Można zawężać okno przez ROWS BETWEEN dla analiz czasowych.",
+  "examples": [
+    {
+      "query": "SELECT order_date, amount, SUM(amount) OVER (ORDER BY order_date) AS running_total FROM daily_sales;",
+      "description": "Suma sprzedaży narastająco."
+    },
+    {
+      "query": "SELECT order_date, amount, AVG(amount) OVER (ORDER BY order_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS avg_7d FROM daily_sales;",
+      "description": "Średnia krocząca 7-dniowa."
+    }
+  ],
+  "exercise": "Policz sumę narastającą wartości zamówień dla każdego klienta osobno.",
+  "solutionHints": [
+    "Użyj SUM(total) OVER (...).",
+    "PARTITION BY customer_id i ORDER BY created_at."
+  ],
+  "expectedQueryPatterns": [
+    "SUM\\(total\\) OVER \\(PARTITION BY customer_id ORDER BY created_at\\)"
+  ]
+}

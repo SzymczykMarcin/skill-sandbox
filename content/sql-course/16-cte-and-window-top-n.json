@@ -1,0 +1,29 @@
+{
+  "id": "sql-016",
+  "slug": "cte-and-window-top-n",
+  "title": "CTE + funkcje okna: TOP N per grupa",
+  "level": "intermediate",
+  "order": 16,
+  "intro": "Połącz CTE i funkcje okna, aby wybrać najlepsze rekordy w każdej grupie.",
+  "explanation": "Popularny wzorzec: w CTE liczysz ROW_NUMBER() dla każdej grupy (PARTITION BY), a potem wybierasz tylko rekordy z rn <= N. To daje np. TOP 3 produkty w każdej kategorii.",
+  "examples": [
+    {
+      "query": "WITH ranked AS (SELECT product_id, category_id, sales, ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY sales DESC) AS rn FROM product_sales) SELECT * FROM ranked WHERE rn <= 3;",
+      "description": "Top 3 produkty w każdej kategorii."
+    },
+    {
+      "query": "WITH ranked_orders AS (SELECT o.*, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY created_at DESC) AS rn FROM orders o) SELECT * FROM ranked_orders WHERE rn = 1;",
+      "description": "Najnowsze zamówienie każdego klienta."
+    }
+  ],
+  "exercise": "Wybierz 2 najwyżej opłacane osoby w każdym dziale z tabeli employees.",
+  "solutionHints": [
+    "W CTE użyj ROW_NUMBER() PARTITION BY department_id ORDER BY salary DESC.",
+    "Na końcu odfiltruj rn <= 2."
+  ],
+  "expectedQueryPatterns": [
+    "WITH",
+    "ROW_NUMBER\\(\\) OVER \\(PARTITION BY department_id ORDER BY salary DESC\\)",
+    "WHERE rn <= 2"
+  ]
+}

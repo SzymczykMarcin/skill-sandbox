@@ -1,0 +1,27 @@
+{
+  "id": "sql-005",
+  "slug": "group-by-basics",
+  "title": "GROUP BY: agregacja danych",
+  "level": "beginner",
+  "order": 5,
+  "intro": "Grupuj wiersze i licz agregaty.",
+  "explanation": "GROUP BY łączy wiersze według wskazanych kolumn. Zwykle używa się z COUNT, SUM, AVG, MIN, MAX.",
+  "examples": [
+    {
+      "query": "SELECT status, COUNT(*) FROM orders GROUP BY status;",
+      "description": "Liczba zamówień na status."
+    },
+    {
+      "query": "SELECT category_id, AVG(price) FROM products GROUP BY category_id;",
+      "description": "Średnia cena w kategorii."
+    }
+  ],
+  "exercise": "Policz liczbę użytkowników w każdym kraju w tabeli users.",
+  "solutionHints": [
+    "Użyj COUNT(*).",
+    "Pogrupuj po country."
+  ],
+  "expectedQueryPatterns": [
+    "SELECT country, COUNT\\(\\*\\) FROM users GROUP BY country"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "sql-004",
+  "slug": "limit-results",
+  "title": "LIMIT: ograniczanie liczby rekordów",
+  "level": "beginner",
+  "order": 4,
+  "intro": "Pobieraj tylko fragment wyników.",
+  "explanation": "LIMIT ustala maksymalną liczbę zwracanych wierszy. Często łączony z ORDER BY do tworzenia rankingów i paginacji.",
+  "examples": [
+    {
+      "query": "SELECT * FROM posts ORDER BY published_at DESC LIMIT 10;",
+      "description": "10 najnowszych wpisów."
+    },
+    {
+      "query": "SELECT * FROM products LIMIT 5;",
+      "description": "Pierwsze 5 wierszy bez gwarancji kolejności."
+    }
+  ],
+  "exercise": "Zwróć 3 najdroższe produkty z tabeli products.",
+  "solutionHints": [
+    "Najpierw posortuj malejąco po cenie.",
+    "Na końcu dodaj LIMIT 3."
+  ],
+  "expectedQueryPatterns": [
+    "ORDER BY price DESC LIMIT 3"
+  ]
+}

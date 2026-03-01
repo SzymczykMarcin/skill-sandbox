@@ -1,0 +1,27 @@
+{
+  "id": "sql-007",
+  "slug": "inner-join-basics",
+  "title": "JOIN: łączenie tabel",
+  "level": "intermediate",
+  "order": 7,
+  "intro": "Łącz dane z wielu tabel przez klucze.",
+  "explanation": "INNER JOIN zwraca tylko pasujące rekordy. LEFT JOIN zachowuje wszystkie rekordy z lewej tabeli i dopasowania z prawej.",
+  "examples": [
+    {
+      "query": "SELECT o.id, c.name FROM orders o INNER JOIN customers c ON c.id = o.customer_id;",
+      "description": "Zamówienia z nazwą klienta."
+    },
+    {
+      "query": "SELECT c.name, o.id FROM customers c LEFT JOIN orders o ON o.customer_id = c.id;",
+      "description": "Wszyscy klienci, także bez zamówień."
+    }
+  ],
+  "exercise": "Połącz orders i order_items, aby zwrócić id zamówienia i quantity.",
+  "solutionHints": [
+    "Użyj INNER JOIN po order_id i id."
+  ],
+  "expectedQueryPatterns": [
+    "FROM orders .*JOIN order_items",
+    "ON order_items\\.order_id\\s*=\\s*orders\\.id"
+  ]
+}

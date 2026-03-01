@@ -1,0 +1,27 @@
+{
+  "id": "sql-009",
+  "slug": "subqueries-from",
+  "title": "Podzapytania w FROM (derived tables)",
+  "level": "intermediate",
+  "order": 9,
+  "intro": "Buduj tymczasowe zestawy danych i zapytuj je jak tabelę.",
+  "explanation": "Podzapytanie w FROM tworzy derived table. Musi mieć alias. Przydatne do etapowego liczenia agregatów.",
+  "examples": [
+    {
+      "query": "SELECT t.customer_id, t.total_orders FROM (SELECT customer_id, COUNT(*) AS total_orders FROM orders GROUP BY customer_id) t WHERE t.total_orders >= 3;",
+      "description": "Klienci z minimum 3 zamówieniami."
+    },
+    {
+      "query": "SELECT x.category_id, x.max_price FROM (SELECT category_id, MAX(price) AS max_price FROM products GROUP BY category_id) x;",
+      "description": "Maksymalna cena w kategorii."
+    }
+  ],
+  "exercise": "Zwróć kraje, które mają więcej niż 10 użytkowników, używając podzapytania w FROM.",
+  "solutionHints": [
+    "W podzapytaniu policz użytkowników per country.",
+    "Na zewnątrz odfiltruj count > 10."
+  ],
+  "expectedQueryPatterns": [
+    "FROM \\(SELECT country, COUNT\\(\\*\\) AS total FROM users GROUP BY country\\)"
+  ]
+}

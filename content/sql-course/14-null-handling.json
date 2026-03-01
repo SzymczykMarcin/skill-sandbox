@@ -1,0 +1,27 @@
+{
+  "id": "sql-014",
+  "slug": "null-handling",
+  "title": "NULL: IS NULL, COALESCE, CASE",
+  "level": "intermediate",
+  "order": 14,
+  "intro": "Obsługuj brakujące wartości i buduj bezpieczne warunki.",
+  "explanation": "NULL oznacza brak wartości i nie jest równy żadnej wartości, nawet samemu sobie. Dlatego do filtrowania używa się IS NULL/IS NOT NULL. COALESCE zwraca pierwszy nie-NULL, a CASE pozwala tworzyć warunkową logikę w SELECT.",
+  "examples": [
+    {
+      "query": "SELECT * FROM users WHERE deleted_at IS NULL;",
+      "description": "Tylko aktywne rekordy bez daty usunięcia."
+    },
+    {
+      "query": "SELECT id, COALESCE(phone, \"brak\") AS phone_display FROM customers;",
+      "description": "Zastąpienie brakującego telefonu wartością domyślną."
+    }
+  ],
+  "exercise": "Zwróć listę produktów z kolumną discount_value, gdzie NULL zastąpisz 0.",
+  "solutionHints": [
+    "Wybierz COALESCE(discount, 0).",
+    "Nadaj alias discount_value."
+  ],
+  "expectedQueryPatterns": [
+    "COALESCE\\(discount,\\s*0\\) AS discount_value"
+  ]
+}

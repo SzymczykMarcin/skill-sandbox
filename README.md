@@ -21,6 +21,32 @@ Konfiguracja przez zmienne środowiskowe:
 - `SQLITE_RUNTIME_DIR` – katalog runtime (domyślnie `.runtime/sqlite`)
 - `SQLITE_BASE_DB_PATH` – pełna ścieżka do bazowego snapshotu
 
+
+## Szybki start na Windows 11 (jeden plik)
+
+W katalogu repo jest skrypt `start.ps1`, który:
+- znajdzie Python 3,
+- utworzy `.venv` (jeśli nie istnieje),
+- doinstaluje brakujące biblioteki,
+- uruchomi gotową stronę kursu.
+
+Uruchom w PowerShell (w katalogu repo):
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\start.ps1
+```
+
+Po starcie otwórz: `http://127.0.0.1:8000/kurs/sql`
+
+Przydatne opcje:
+
+```powershell
+.\start.ps1 -Port 8080
+.\start.ps1 -Host 0.0.0.0 -NoReload
+.\start.ps1 -SkipVenv
+```
+
 ## Backend API (FastAPI)
 
 Uruchomienie lokalne:

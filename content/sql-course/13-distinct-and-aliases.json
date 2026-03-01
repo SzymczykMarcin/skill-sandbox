@@ -1,0 +1,28 @@
+{
+  "id": "sql-013",
+  "slug": "distinct-and-aliases",
+  "title": "DISTINCT i aliasy kolumn/tabel",
+  "level": "beginner",
+  "order": 13,
+  "intro": "Usuń duplikaty z wyników i popraw czytelność zapytań aliasami.",
+  "explanation": "DISTINCT zwraca unikalne kombinacje wybranych kolumn. Aliasy (AS) pozwalają skracać nazwy tabel i nadawać czytelne etykiety kolumnom, szczególnie przy JOIN-ach i agregacjach.",
+  "examples": [
+    {
+      "query": "SELECT DISTINCT city FROM customers;",
+      "description": "Lista unikalnych miast klientów."
+    },
+    {
+      "query": "SELECT o.id AS order_id, c.name AS customer_name FROM orders AS o JOIN customers AS c ON c.id = o.customer_id;",
+      "description": "Czytelne aliasy dla kolumn i tabel."
+    }
+  ],
+  "exercise": "Zwróć unikalne wartości country z tabeli users oraz nazwij kolumnę aliasem user_country.",
+  "solutionHints": [
+    "Użyj DISTINCT na kolumnie country.",
+    "Nadaj alias przez AS user_country."
+  ],
+  "expectedQueryPatterns": [
+    "SELECT DISTINCT country AS user_country FROM users",
+    "SELECT DISTINCT country user_country FROM users"
+  ]
+}

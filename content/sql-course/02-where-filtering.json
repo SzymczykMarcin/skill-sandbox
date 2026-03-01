@@ -1,0 +1,28 @@
+{
+  "id": "sql-002",
+  "slug": "where-filtering",
+  "title": "WHERE: filtrowanie wierszy",
+  "level": "beginner",
+  "order": 2,
+  "intro": "Naucz się ograniczać wyniki do wierszy spełniających warunek.",
+  "explanation": "Klauzula WHERE działa przed sortowaniem i limitowaniem. Obsługuje operatory porównań, LIKE, IN, BETWEEN oraz łączenie warunków przez AND/OR.",
+  "examples": [
+    {
+      "query": "SELECT * FROM orders WHERE status = 'paid';",
+      "description": "Wybiera opłacone zamówienia."
+    },
+    {
+      "query": "SELECT id, city FROM customers WHERE city IN ('Warsaw', 'Krakow');",
+      "description": "Filtruje klientów z dwóch miast."
+    }
+  ],
+  "exercise": "Zwróć produkty droższe niż 100 z tabeli products.",
+  "solutionHints": [
+    "Użyj operatora >.",
+    "Warunek umieść po WHERE."
+  ],
+  "expectedQueryPatterns": [
+    "WHERE price > 100",
+    "SELECT .* FROM products WHERE"
+  ]
+}

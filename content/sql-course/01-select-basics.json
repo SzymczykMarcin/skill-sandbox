@@ -1,0 +1,28 @@
+{
+  "id": "sql-001",
+  "slug": "select-basics",
+  "title": "SELECT: pobieranie kolumn",
+  "level": "beginner",
+  "order": 1,
+  "intro": "Poznaj podstawową składnię SELECT i wybieranie konkretnych kolumn z tabeli.",
+  "explanation": "Użyj SELECT kolumna FROM tabela, aby pobrać dane. Gwiazdka (*) zwraca wszystkie kolumny, ale w praktyce lepiej wskazywać tylko potrzebne pola.",
+  "examples": [
+    {
+      "query": "SELECT id, name FROM customers;",
+      "description": "Pobiera identyfikator i nazwę klienta."
+    },
+    {
+      "query": "SELECT * FROM products;",
+      "description": "Pobiera wszystkie kolumny produktów."
+    }
+  ],
+  "exercise": "Napisz zapytanie zwracające kolumny id i email z tabeli users.",
+  "solutionHints": [
+    "Użyj SELECT z dwoma kolumnami.",
+    "W klauzuli FROM wskaż tabelę users."
+  ],
+  "expectedQueryPatterns": [
+    "SELECT id, email FROM users",
+    "SELECT\\s+id\\s*,\\s*email\\s+FROM\\s+users"
+  ]
+}

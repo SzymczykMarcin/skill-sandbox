@@ -1,0 +1,28 @@
+{
+  "id": "sql-008",
+  "slug": "subqueries-where",
+  "title": "Podzapytania w WHERE",
+  "level": "intermediate",
+  "order": 8,
+  "intro": "Użyj podzapytania do dynamicznego filtrowania.",
+  "explanation": "Podzapytanie może zwrócić jedną wartość lub listę. W WHERE stosuje się je np. z IN, EXISTS albo operatorami porównania.",
+  "examples": [
+    {
+      "query": "SELECT name FROM employees WHERE department_id IN (SELECT id FROM departments WHERE active = true);",
+      "description": "Pracownicy z aktywnych działów."
+    },
+    {
+      "query": "SELECT * FROM products WHERE price > (SELECT AVG(price) FROM products);",
+      "description": "Produkty droższe niż średnia."
+    }
+  ],
+  "exercise": "Pobierz klientów, którzy mają zamówienia (na podstawie tabel orders i customers).",
+  "solutionHints": [
+    "Użyj IN lub EXISTS.",
+    "Połącz customer_id z id klienta."
+  ],
+  "expectedQueryPatterns": [
+    "WHERE id IN \\(SELECT customer_id FROM orders\\)",
+    "WHERE EXISTS \\("
+  ]
+}

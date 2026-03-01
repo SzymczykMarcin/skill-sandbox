@@ -1,0 +1,29 @@
+{
+  "id": "sql-010",
+  "slug": "cte-basics",
+  "title": "CTE: czytelne zapytania wieloetapowe",
+  "level": "intermediate",
+  "order": 10,
+  "intro": "Stosuj WITH (CTE), aby podzielić logikę na kroki.",
+  "explanation": "CTE zwiększa czytelność i pozwala wielokrotnie używać pośrednich wyników. Składnia zaczyna się od WITH nazwa AS (...).",
+  "examples": [
+    {
+      "query": "WITH recent_orders AS (SELECT * FROM orders WHERE created_at >= CURRENT_DATE - INTERVAL '30 day') SELECT customer_id, COUNT(*) FROM recent_orders GROUP BY customer_id;",
+      "description": "Liczba zamówień z ostatnich 30 dni."
+    },
+    {
+      "query": "WITH expensive AS (SELECT * FROM products WHERE price > 500) SELECT COUNT(*) FROM expensive;",
+      "description": "Liczenie na bazie CTE."
+    }
+  ],
+  "exercise": "Utwórz CTE active_users i policz ilu aktywnych użytkowników jest w każdym planie.",
+  "solutionHints": [
+    "W CTE odfiltruj active = true.",
+    "W zapytaniu głównym użyj GROUP BY plan_id."
+  ],
+  "expectedQueryPatterns": [
+    "WITH active_users AS",
+    "FROM active_users",
+    "GROUP BY plan_id"
+  ]
+}

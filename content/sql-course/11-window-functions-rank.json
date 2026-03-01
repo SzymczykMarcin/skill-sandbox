@@ -1,0 +1,27 @@
+{
+  "id": "sql-011",
+  "slug": "window-functions-rank",
+  "title": "Funkcje okna: ROW_NUMBER i RANK",
+  "level": "intermediate",
+  "order": 11,
+  "intro": "Numeruj i rankuj rekordy bez utraty szczegółowych wierszy.",
+  "explanation": "Funkcje okna działają na zestawie wierszy z OVER(). PARTITION BY tworzy grupy, ORDER BY ustala kolejność w grupie.",
+  "examples": [
+    {
+      "query": "SELECT employee_id, department_id, salary, ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rn FROM salaries;",
+      "description": "Numer pozycji w dziale."
+    },
+    {
+      "query": "SELECT player_id, points, RANK() OVER (ORDER BY points DESC) AS ranking FROM leaderboard;",
+      "description": "Ranking z remisami."
+    }
+  ],
+  "exercise": "Nadaj numer zamówienia klienta wg daty (od najstarszego) w tabeli orders.",
+  "solutionHints": [
+    "Użyj ROW_NUMBER() OVER (...).",
+    "PARTITION BY customer_id i ORDER BY created_at ASC."
+  ],
+  "expectedQueryPatterns": [
+    "ROW_NUMBER\\(\\) OVER \\(PARTITION BY customer_id ORDER BY created_at ASC\\)"
+  ]
+}

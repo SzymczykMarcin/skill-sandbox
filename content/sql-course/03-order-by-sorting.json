@@ -1,0 +1,26 @@
+{
+  "id": "sql-003",
+  "slug": "order-by-sorting",
+  "title": "ORDER BY: sortowanie",
+  "level": "beginner",
+  "order": 3,
+  "intro": "Sortuj wyniki rosnąco i malejąco.",
+  "explanation": "ORDER BY domyślnie sortuje rosnąco (ASC). Dla porządku malejącego użyj DESC. Możesz sortować po wielu kolumnach.",
+  "examples": [
+    {
+      "query": "SELECT name, created_at FROM users ORDER BY created_at DESC;",
+      "description": "Najpierw najnowsi użytkownicy."
+    },
+    {
+      "query": "SELECT city, name FROM customers ORDER BY city ASC, name ASC;",
+      "description": "Sortowanie wielopoziomowe."
+    }
+  ],
+  "exercise": "Posortuj tabelę employees po salary malejąco.",
+  "solutionHints": [
+    "Użyj ORDER BY salary DESC."
+  ],
+  "expectedQueryPatterns": [
+    "ORDER BY salary DESC"
+  ]
+}

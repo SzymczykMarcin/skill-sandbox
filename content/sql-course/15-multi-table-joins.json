@@ -1,0 +1,30 @@
+{
+  "id": "sql-015",
+  "slug": "multi-table-joins",
+  "title": "JOIN wielu tabel + agregacja",
+  "level": "intermediate",
+  "order": 15,
+  "intro": "Łącz 3+ tabele i licz metryki biznesowe.",
+  "explanation": "W praktyce raporty często wymagają łączenia wielu tabel. Dbaj o poprawne klucze i kwalifikuj kolumny aliasami. Po złączeniu możesz grupować i agregować np. przychód per klient.",
+  "examples": [
+    {
+      "query": "SELECT c.id, c.name, SUM(oi.quantity * oi.unit_price) AS revenue FROM customers c JOIN orders o ON o.customer_id = c.id JOIN order_items oi ON oi.order_id = o.id GROUP BY c.id, c.name;",
+      "description": "Przychód klienta na podstawie pozycji zamówień."
+    },
+    {
+      "query": "SELECT p.category_id, COUNT(DISTINCT o.id) AS orders_count FROM products p JOIN order_items oi ON oi.product_id = p.id JOIN orders o ON o.id = oi.order_id GROUP BY p.category_id;",
+      "description": "Liczba zamówień per kategoria."
+    }
+  ],
+  "exercise": "Policz łączną wartość zamówień dla każdego użytkownika z tabel users, orders, order_items.",
+  "solutionHints": [
+    "Połącz users -> orders -> order_items.",
+    "Użyj SUM(quantity * unit_price) i GROUP BY user id."
+  ],
+  "expectedQueryPatterns": [
+    "JOIN orders",
+    "JOIN order_items",
+    "SUM\\(.*quantity.*unit_price.*\\)",
+    "GROUP BY"
+  ]
+}

@@ -17,7 +17,7 @@ function Find-Python {
         if (Get-Command $Preferred -ErrorAction SilentlyContinue) {
             return $Preferred
         }
-        throw "Nie znaleziono interpretera Python: $Preferred"
+        throw "Python interpreter not found: $Preferred"
     }
 
     $candidates = @("py -3", "python", "python3")
@@ -37,7 +37,7 @@ function Find-Python {
         }
     }
 
-    throw "Python 3 nie został znaleziony. Zainstaluj Python 3.11+ i uruchom skrypt ponownie."
+    throw "Python 3 was not found. Install Python 3.11+ and run this script again."
 }
 
 function Invoke-Python {
@@ -54,7 +54,7 @@ function Invoke-Python {
     }
 
     if ($LASTEXITCODE -ne 0) {
-        throw "Polecenie Python zakończyło się błędem: $Python $($Args -join ' ')"
+        throw "Python command failed: $Python $($Args -join ' ')"
     }
 }
 
@@ -67,18 +67,18 @@ Write-Host "[1/4] Python: $pythonCmd"
 $venvPath = Join-Path $RepoRoot ".venv"
 if (-not $SkipVenv) {
     if (-not (Test-Path $venvPath)) {
-        Write-Host "[2/4] Tworzenie środowiska wirtualnego (.venv)..."
+        Write-Host "[2/4] Creating virtual environment (.venv)..."
         Invoke-Python -Python $pythonCmd -Args @("-m", "venv", ".venv")
     }
 
     $venvPython = Join-Path $venvPath "Scripts\python.exe"
     if (-not (Test-Path $venvPython)) {
-        throw "Brak interpretera wirtualnego środowiska: $venvPython"
+        throw "Virtual environment interpreter is missing: $venvPython"
     }
     $pythonCmd = $venvPython
 }
 
-Write-Host "[3/4] Instalacja / aktualizacja zależności Python..."
+Write-Host "[3/4] Installing / updating Python dependencies..."
 Invoke-Python -Python $pythonCmd -Args @("-m", "pip", "install", "--upgrade", "pip")
 Invoke-Python -Python $pythonCmd -Args @(
     "-m", "pip", "install",
@@ -97,8 +97,8 @@ if (-not $NoReload) {
     $reloadArgs += "--reload"
 }
 
-Write-Host "[4/4] Uruchamianie aplikacji..."
-Write-Host "Aplikacja będzie dostępna pod adresem: http://${Host}:$Port/kurs/sql"
+Write-Host "[4/4] Starting application..."
+Write-Host "Application will be available at: http://${Host}:$Port/kurs/sql"
 $uvicornArgs = @(
     "-m", "uvicorn",
     "backend.main:app",

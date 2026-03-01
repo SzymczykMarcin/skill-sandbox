@@ -44,6 +44,8 @@ class SqlRunner:
         base_db_path: Path | None = None,
         query_timeout_s: float = 3.0,
         max_rows: int = 200,
+        max_cell_bytes: int = 100_000,
+        max_output_bytes: int = 1_000_000,
     ) -> None:
         self.schema_path = schema_path
         self.seed_path = seed_path
@@ -51,8 +53,27 @@ class SqlRunner:
         self.base_db_path = base_db_path or runtime_dir / "base_snapshot.sqlite"
         self.query_timeout_s = query_timeout_s
         self.max_rows = max_rows
+        self.max_cell_bytes = max_cell_bytes
+        self.max_output_bytes = max_output_bytes
         self.runtime_dir.mkdir(parents=True, exist_ok=True)
         self._ensure_base_snapshot()
+
+    def _configure_connection_limits(self, conn: sqlite3.Connection) -> None:
+        if not hasattr(conn, "setlimit"):
+            return
+
+        conn.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, self.max_cell_bytes)
+
+    def _estimate_row_bytes(self, row: sqlite3.Row | tuple[Any, ...]) -> int:
+        total = 0
+        for value in row:
+            if value is None:
+                total += 4
+            elif isinstance(value, bytes):
+                total += len(value)
+            else:
+                total += len(str(value).encode("utf-8"))
+        return total
 
     def _ensure_base_snapshot(self) -> None:
         if self.base_db_path.exists():
@@ -116,6 +137,7 @@ class SqlRunner:
         started = time.monotonic()
 
         try:
+            self._configure_connection_limits(conn)
             deadline = started + self.query_timeout_s
 
             def progress_handler() -> int:
@@ -129,6 +151,19 @@ class SqlRunner:
             columns = [description[0] for description in (cursor.description or [])]
             truncated = len(fetched) > self.max_rows
             rows = fetched[: self.max_rows]
+
+            output_bytes = 0
+            for row in rows:
+                output_bytes += self._estimate_row_bytes(row)
+                if output_bytes > self.max_output_bytes:
+                    return SqlExecutionResult(
+                        columns=[],
+                        rows=[],
+                        execution_ms=(time.monotonic() - started) * 1000,
+                        error="Wynik zapytania przekracza dopuszczalny limit pamięci odpowiedzi.",
+                        truncated=False,
+                    )
+
             execution_ms = (time.monotonic() - started) * 1000
 
             return SqlExecutionResult(
@@ -142,7 +177,7 @@ class SqlRunner:
             execution_ms = (time.monotonic() - started) * 1000
             error_message = "Przekroczono limit czasu wykonania zapytania."
             if "interrupted" not in str(exc).lower():
-                error_message = str(exc)
+                error_message = "Zapytanie nie mogło zostać wykonane."
             return SqlExecutionResult(
                 columns=[],
                 rows=[],

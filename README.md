@@ -43,7 +43,7 @@ Przydatne opcje:
 
 ```powershell
 .\start.ps1 -Port 8080
-.\start.ps1 -Host 0.0.0.0 -NoReload
+.\start.ps1 -BindHost 0.0.0.0 -NoReload
 .\start.ps1 -SkipVenv
 ```
 

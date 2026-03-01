@@ -2,19 +2,19 @@
 
 ## 1. Decyzja technologiczna
 
-### Frontend
-- **Next.js + TypeScript**
+### Warstwa web (SSR + API)
+- **FastAPI (Python) + renderowanie HTML po stronie serwera (SSR)**
 - Uzasadnienie:
-  - szybkie budowanie interfejsu (routing, SSR/SSG, API routes opcjonalnie),
-  - silne typowanie i łatwiejsze utrzymanie kodu,
-  - duży ekosystem komponentów i narzędzi.
+  - obecna aplikacja już dostarcza kompletne widoki kursu (`/kurs/sql`, `/kurs/sql/{slug}`),
+  - jeden runtime upraszcza utrzymanie MVP (routing, API i widoki w tym samym serwisie),
+  - brak dodatkowego frontendu redukuje koszt wdrożenia i utrzymania.
 
-### Backend API
-- **FastAPI (Python)**
+### API JSON
+- **Endpointy REST w FastAPI**
 - Uzasadnienie:
-  - wysoka wydajność dla prostych endpointów REST,
-  - czytelna deklaracja kontraktów danych (Pydantic),
-  - szybka implementacja i łatwa dokumentacja OpenAPI.
+  - czytelny kontrakt danych i łatwa walidacja wejścia/wyjścia,
+  - możliwość ponownego użycia tych samych danych przez przyszły frontend SPA,
+  - szybka implementacja i automatyczna dokumentacja OpenAPI.
 
 ### Silnik SQL
 - **SQLite** uruchamiany w trybie **izolowanym per sesja**.
@@ -27,33 +27,26 @@
 
 ## 2. Przepływ danych
 
-### `GET /lessons`
-1. Frontend wysyła żądanie do backendu.
-2. Backend pobiera listę lekcji z warstwy danych (np. pliki JSON/MD lub tabela `lessons`).
-3. Backend zwraca listę skróconych rekordów (np. `slug`, `title`, `difficulty`, `shortDescription`).
-4. Frontend renderuje listę lekcji.
+### `GET /kurs/sql` (SSR)
+1. Przeglądarka żąda strony spisu lekcji.
+2. FastAPI ładuje lekcje z plików `content/sql-course/*.json`.
+3. Serwer renderuje HTML listy lekcji i zwraca gotowy dokument.
+4. Po stronie przeglądarki aktualizowany jest status postępu (localStorage).
 
-### `GET /lessons/:slug`
-1. Frontend żąda konkretnej lekcji po `slug`.
-2. Backend ładuje treść lekcji i metadane ćwiczenia:
-   - opis zadania,
-   - schema startowa,
-   - przykładowe dane,
-   - oczekiwany format wyniku.
-3. Backend zwraca pełny obiekt lekcji.
-4. Frontend renderuje treść i edytor SQL.
+### `GET /kurs/sql/{slug}` (SSR)
+1. Przeglądarka żąda strony konkretnej lekcji.
+2. FastAPI ładuje wskazaną lekcję oraz wyznacza poprzednią/następną.
+3. Serwer renderuje HTML z treścią lekcji, nawigacją i osadzonym playgroundem SQL.
+4. Klient uruchamia skrypt edytora i przywraca szkic zapytania użytkownika z localStorage.
 
-### `POST /execute`
-1. Frontend wysyła zapytanie SQL wraz z identyfikatorem lekcji/sesji.
+### `POST /execute` (JSON)
+1. Skrypt strony lekcji wysyła zapytanie SQL wraz z identyfikatorem lekcji.
 2. Backend:
    - tworzy lub pobiera izolowaną bazę SQLite dla sesji,
    - waliduje zapytanie pod kątem reguł bezpieczeństwa,
    - wykonuje zapytanie z limitami.
-3. Backend zwraca:
-   - status (`ok`/`error`),
-   - wynik (`columns`, `rows`) albo komunikat błędu,
-   - metadane wykonania (np. czas, liczba wierszy).
-4. Frontend prezentuje wynik tabelarycznie lub błąd.
+3. Backend zwraca JSON ze statusem (`ok`/`error`) oraz wynikiem lub błędem.
+4. Strona SSR aktualizuje tabelę wyników i metadane wykonania bez przeładowania.
 
 ---
 
@@ -80,8 +73,8 @@
 
 MVP jest ukończone, gdy działają wszystkie elementy poniżej:
 
-1. Użytkownik widzi listę lekcji z `GET /lessons`.
-2. Użytkownik otwiera lekcję (`GET /lessons/:slug`) i widzi:
+1. Użytkownik widzi listę lekcji pod `/kurs/sql`.
+2. Użytkownik otwiera lekcję pod `/kurs/sql/{slug}` i widzi:
    - treść,
    - instrukcję ćwiczenia,
    - pole do wpisania SQL.

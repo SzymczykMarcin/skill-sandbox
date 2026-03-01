@@ -1,0 +1,3 @@
+# Runtime SQLite artifacts (generated on first run)
+.runtime/
+*.sqlite

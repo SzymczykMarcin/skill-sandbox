@@ -35,6 +35,11 @@ class ExecuteResponse(BaseModel):
     feedback: str
 
 
+class ResetDbResponse(BaseModel):
+    status: str
+    message: str
+
+
 repo_root = Path(__file__).resolve().parents[1]
 runtime_dir = Path(os.getenv("SQLITE_RUNTIME_DIR", repo_root / ".runtime/sqlite"))
 base_db_path_raw = os.getenv("SQLITE_BASE_DB_PATH")
@@ -175,3 +180,9 @@ def execute(request: ExecuteRequest, http_request: Request) -> ExecuteResponse:
             gradingStatus="fail",
             feedback="❌ Nie udało się wykonać zapytania. Spróbuj ponownie później.",
         )
+
+
+@app.post("/reset-db", response_model=ResetDbResponse)
+def reset_db() -> ResetDbResponse:
+    runner.reset_base_snapshot()
+    return ResetDbResponse(status="ok", message="Stan bazy został zresetowany.")

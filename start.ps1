@@ -2,7 +2,7 @@
 param(
     [switch]$NoReload,
     [int]$Port = 8000,
-    [string]$Host = "127.0.0.1",
+    [Alias("Host")][string]$BindHost = "127.0.0.1",
     [string]$PythonExe,
     [switch]$SkipVenv
 )
@@ -98,11 +98,11 @@ if (-not $NoReload) {
 }
 
 Write-Host "[4/4] Starting application..."
-Write-Host "Application will be available at: http://${Host}:$Port/kurs/sql"
+Write-Host "Application will be available at: http://${BindHost}:$Port/kurs/sql"
 $uvicornArgs = @(
     "-m", "uvicorn",
     "backend.main:app",
-    "--host", $Host,
+    "--host", $BindHost,
     "--port", "$Port"
 ) + $reloadArgs
 Invoke-Python -Python $pythonCmd -Args $uvicornArgs

@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import time
-from collections import defaultdict, deque
+from collections import defaultdict
 from functools import lru_cache
 from importlib import import_module
 from importlib.util import find_spec
@@ -18,6 +18,13 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from backend.exercise_grader import ExerciseGrader
 from backend.html_views import render_course_index, render_lesson_page
+from backend.rate_limiter import (
+    RateLimiter,
+    RateLimitKeyBuilder,
+    create_rate_limiter,
+    load_rate_limiter_settings,
+    load_rate_limit_key_builder_from_env,
+)
 from backend.sql_runner import SqlRunner, SqlValidationError
 
 
@@ -254,26 +261,6 @@ class ErrorReporter:
         self._capture_message(message, level="error")
 
 
-class InMemoryRateLimiter:
-    def __init__(self, max_requests: int, window_s: float) -> None:
-        self.max_requests = max_requests
-        self.window_s = window_s
-        self._entries: dict[str, deque[float]] = defaultdict(deque)
-        self._lock = Lock()
-
-    def allow(self, key: str) -> bool:
-        now = time.monotonic()
-        with self._lock:
-            bucket = self._entries[key]
-            while bucket and now - bucket[0] > self.window_s:
-                bucket.popleft()
-
-            if len(bucket) >= self.max_requests:
-                return False
-
-            bucket.append(now)
-            return True
-
 runner = SqlRunner(
     schema_path=repo_root / "db/schema.sql",
     seed_path=repo_root / "db/seed.sql",
@@ -285,10 +272,9 @@ runner = SqlRunner(
     max_output_bytes=int(os.getenv("SQL_MAX_OUTPUT_BYTES", "1000000")),
 )
 grader = ExerciseGrader(lessons_dir=repo_root / "content/sql-course", runner=runner)
-rate_limiter = InMemoryRateLimiter(
-    max_requests=int(os.getenv("EXECUTE_RATE_LIMIT_MAX_REQUESTS", "20")),
-    window_s=float(os.getenv("EXECUTE_RATE_LIMIT_WINDOW_S", "60")),
-)
+rate_limiter_settings = load_rate_limiter_settings()
+rate_limiter: RateLimiter = create_rate_limiter(rate_limiter_settings)
+rate_limit_key_builder: RateLimitKeyBuilder = load_rate_limit_key_builder_from_env()
 
 app = FastAPI()
 metrics_store = MetricsStore()
@@ -398,7 +384,8 @@ def sql_course_lesson(slug: str) -> HTMLResponse:
 def execute(request: ExecuteRequest, http_request: Request) -> ExecuteResponse:
     client = http_request.client
     client_ip = client.host if client else "unknown"
-    if not rate_limiter.allow(client_ip):
+    limit_key = rate_limit_key_builder.build(http_request)
+    if not rate_limiter.allow(limit_key):
         raise HTTPException(status_code=429, detail="Przekroczono limit żądań. Spróbuj ponownie później.")
 
     try:

@@ -56,4 +56,17 @@ Każda lekcja ma teraz sekcję `validation` z:
 Zmienne środowiskowe backendu:
 
 - `SQL_QUERY_TIMEOUT_S` – limit czasu wykonania pojedynczego zapytania (domyślnie `3`),
-- `SQL_MAX_ROWS` – limit liczby zwracanych rekordów (domyślnie `200`).
+- `SQL_MAX_ROWS` – limit liczby zwracanych rekordów (domyślnie `200`),
+- `EXECUTE_RATE_LIMIT_MAX_REQUESTS` – maksymalna liczba żądań w oknie (domyślnie `20`),
+- `EXECUTE_RATE_LIMIT_WINDOW_S` – długość okna limitu (domyślnie `60` sekund),
+- `APP_ENV` – środowisko uruchomieniowe (`development`/`production`); domyślnie `development`,
+- `EXECUTE_RATE_LIMIT_BACKEND` – backend limitera (`memory` albo `redis`); domyślnie `redis` dla `APP_ENV=production`, w innych przypadkach `memory`,
+- `EXECUTE_RATE_LIMIT_REDIS_URL` – URL Redis używany przez limiter (domyślnie `redis://localhost:6379/0`),
+- `EXECUTE_RATE_LIMIT_REDIS_PREFIX` – prefiks kluczy limitera w Redis (domyślnie `execute`),
+- `EXECUTE_RATE_LIMIT_INCLUDE_IP` – czy klucz limitu ma zawierać IP klienta (domyślnie `true`),
+- `EXECUTE_RATE_LIMIT_INCLUDE_SESSION` – czy klucz limitu ma zawierać identyfikator sesji (domyślnie `false`),
+- `EXECUTE_RATE_LIMIT_INCLUDE_USER` – czy klucz limitu ma zawierać identyfikator użytkownika (domyślnie `false`),
+- `EXECUTE_RATE_LIMIT_SESSION_HEADER` – nazwa nagłówka sesji (domyślnie `X-Session-Id`),
+- `EXECUTE_RATE_LIMIT_USER_HEADER` – nazwa nagłówka użytkownika (domyślnie `X-User-Id`).
+
+W trybie developerskim domyślnie używany jest limiter in-memory. W środowisku produkcyjnym (`APP_ENV=production`) backend domyślnie przełącza się na Redis, dzięki czemu limit działa poprawnie przy wielu instancjach aplikacji.

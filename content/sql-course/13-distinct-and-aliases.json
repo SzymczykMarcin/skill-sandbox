@@ -24,5 +24,18 @@
   "expectedQueryPatterns": [
     "SELECT DISTINCT country AS user_country FROM users",
     "SELECT DISTINCT country user_country FROM users"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT DISTINCT country AS user_country FROM users",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "DISTINCT"
+      ]
+    }
+  }
 }

@@ -25,5 +25,19 @@
     "WITH active_users AS",
     "FROM active_users",
     "GROUP BY plan_id"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "WITH active_users AS (SELECT plan_id FROM users WHERE active = 1) SELECT plan_id, COUNT(*) AS active_count FROM active_users GROUP BY plan_id",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "WITH",
+        "GROUP BY"
+      ]
+    }
+  }
 }

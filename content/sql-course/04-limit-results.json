@@ -23,5 +23,19 @@
   ],
   "expectedQueryPatterns": [
     "ORDER BY price DESC LIMIT 3"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT id, name, price FROM products ORDER BY price DESC LIMIT 3",
+    "comparison": {
+      "ignoreRowOrder": false,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "ORDER BY",
+        "LIMIT"
+      ]
+    }
+  }
 }

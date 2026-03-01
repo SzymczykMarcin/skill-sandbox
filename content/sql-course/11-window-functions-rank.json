@@ -23,5 +23,18 @@
   ],
   "expectedQueryPatterns": [
     "ROW_NUMBER\\(\\) OVER \\(PARTITION BY customer_id ORDER BY created_at ASC\\)"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT id, customer_id, created_at, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY created_at ASC) AS order_rank FROM orders",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "WINDOW"
+      ]
+    }
+  }
 }

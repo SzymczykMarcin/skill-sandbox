@@ -24,5 +24,18 @@
   "expectedQueryPatterns": [
     "WHERE price > 100",
     "SELECT .* FROM products WHERE"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT * FROM products WHERE price > 100",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "WHERE"
+      ]
+    }
+  }
 }

@@ -26,5 +26,19 @@
     "JOIN order_items",
     "SUM\\(.*quantity.*unit_price.*\\)",
     "GROUP BY"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT users.id AS user_id, users.full_name, SUM(order_items.quantity * order_items.unit_price) AS total_value FROM users INNER JOIN orders ON orders.user_id = users.id INNER JOIN order_items ON order_items.order_id = orders.id GROUP BY users.id, users.full_name",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0001
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "JOIN",
+        "GROUP BY"
+      ]
+    }
+  }
 }

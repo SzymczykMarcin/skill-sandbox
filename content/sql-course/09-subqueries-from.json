@@ -23,5 +23,18 @@
   ],
   "expectedQueryPatterns": [
     "FROM \\(SELECT country, COUNT\\(\\*\\) AS total FROM users GROUP BY country\\)"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT country, total FROM (SELECT country, COUNT(*) AS total FROM users GROUP BY country) AS country_totals WHERE total > 10",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "SUBQUERY"
+      ]
+    }
+  }
 }

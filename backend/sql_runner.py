@@ -79,6 +79,12 @@ class SqlRunner:
         if self.base_db_path.exists():
             return
 
+        self._rebuild_base_snapshot()
+
+    def _rebuild_base_snapshot(self) -> None:
+        self.base_db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.base_db_path.unlink(missing_ok=True)
+
         conn = sqlite3.connect(self.base_db_path)
         try:
             conn.executescript(self.schema_path.read_text(encoding="utf-8"))
@@ -86,6 +92,9 @@ class SqlRunner:
             conn.commit()
         finally:
             conn.close()
+
+    def reset_base_snapshot(self) -> None:
+        self._rebuild_base_snapshot()
 
     def _make_working_connection(self) -> tuple[sqlite3.Connection, Path]:
         temp = tempfile.NamedTemporaryFile(prefix="sql-runner-", suffix=".sqlite", delete=False)

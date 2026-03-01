@@ -39,5 +39,6 @@
         "GROUP BY"
       ]
     }
-  }
+  },
+  "starterQuery": "WITH recent_orders AS (SELECT * FROM orders WHERE created_at >= CURRENT_DATE - INTERVAL '30 day') SELECT customer_id, COUNT(*) FROM recent_orders GROUP BY customer_id;"
 }

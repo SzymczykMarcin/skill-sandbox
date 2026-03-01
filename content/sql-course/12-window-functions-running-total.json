@@ -36,5 +36,6 @@
         "WINDOW"
       ]
     }
-  }
+  },
+  "starterQuery": "SELECT order_date, amount, SUM(amount) OVER (ORDER BY order_date) AS running_total FROM daily_sales;"
 }

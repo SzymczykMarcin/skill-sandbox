@@ -77,6 +77,20 @@ def render_layout(content: str, title: str) -> str:
       .btn.disabled {{ color: #999; border-color: #e2e2e2; pointer-events: none; }}
       pre {{ background: #f4f4f4; padding: 0.75rem; border-radius: 6px; overflow-x: auto; }}
       .muted {{ color: #666; }}
+      .editor-shell {{ border: 1px solid #d7d7d7; border-radius: 8px; overflow: hidden; }}
+      .editor-container {{ min-height: 220px; }}
+      .editor-fallback {{ width: 100%; min-height: 220px; border: 0; padding: 0.75rem; box-sizing: border-box; font-family: Menlo, Consolas, monospace; }}
+      .actions {{ display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; align-items: center; }}
+      button.btn {{ background: white; cursor: pointer; }}
+      button.btn:disabled {{ color: #999; border-color: #e2e2e2; cursor: not-allowed; }}
+      .status {{ margin-top: 0.75rem; font-size: 0.95rem; }}
+      .status.loading {{ color: #1f4bb2; }}
+      .status.error {{ color: #b00020; }}
+      .status.success {{ color: #08620f; }}
+      table {{ width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.95rem; }}
+      th, td {{ border: 1px solid #ddd; padding: 0.4rem 0.55rem; text-align: left; vertical-align: top; }}
+      th {{ background: #f8f8f8; }}
+      .meta {{ margin-top: 0.5rem; color: #555; font-size: 0.92rem; }}
     </style>
   </head>
   <body>
@@ -139,6 +153,17 @@ def sql_course_lesson(slug: str) -> HTMLResponse:
         else "<span class='btn disabled'>Następne ćwiczenie</span>"
     )
 
+    lesson_json = json.dumps(
+        {
+            "slug": lesson["slug"],
+            "starterQuery": lesson.get("starterQuery")
+            or lesson.get("validation", {}).get("expectedSql")
+            or "SELECT * FROM users LIMIT 10;",
+            "solutionHints": lesson.get("solutionHints") or [],
+        },
+        ensure_ascii=False,
+    )
+
     html = render_layout(
         f"""
         <h1>{escape(str(lesson['title']))}</h1>
@@ -164,11 +189,219 @@ def sql_course_lesson(slug: str) -> HTMLResponse:
           <p>{escape(str(lesson['exercise']))}</p>
         </section>
 
+        <section>
+          <h2>SQL Playground</h2>
+          <div class='editor-shell'>
+            <div id='sql-editor' class='editor-container'></div>
+          </div>
+          <div class='actions'>
+            <button id='run-query' class='btn' type='button'>Uruchom zapytanie</button>
+            <button id='reset-query' class='btn' type='button'>Resetuj zapytanie</button>
+            <button id='show-hint' class='btn' type='button'>Pokaż podpowiedź</button>
+            <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
+          </div>
+          <div id='hint-box' class='status muted' hidden></div>
+          <div id='query-status' class='status muted'>Gotowe do uruchomienia zapytania.</div>
+          <div id='result-meta' class='meta'></div>
+          <div id='result-area'></div>
+        </section>
+
         <nav class='nav'>
           {prev_button}
           {next_button}
           <a class='btn' href='/kurs/sql'>Wróć do spisu</a>
         </nav>
+
+        <script>
+          const LESSON_CONTEXT = {lesson_json};
+
+          class SqlEditor {{
+            constructor(container, initialValue) {{
+              this.container = container;
+              this.initialValue = initialValue;
+              this.fallback = null;
+              this.view = null;
+            }}
+
+            async mount() {{
+              try {{
+                await this._mountCodeMirror();
+              }} catch (_error) {{
+                this._mountFallback();
+              }}
+            }}
+
+            async _mountCodeMirror() {{
+              const [cmView, cmState, cmCommands, cmSql] = await Promise.all([
+                import('https://esm.sh/@codemirror/view@6.36.2'),
+                import('https://esm.sh/@codemirror/state@6.5.0'),
+                import('https://esm.sh/@codemirror/commands@6.8.1'),
+                import('https://esm.sh/@codemirror/lang-sql@6.10.0')
+              ]);
+
+              const customTheme = cmView.EditorView.theme({{
+                '&': {{ minHeight: '220px', fontFamily: 'Menlo, Consolas, monospace', fontSize: '14px' }},
+                '.cm-content': {{ minHeight: '220px' }}
+              }});
+
+              const onRunShortcut = cmView.keymap.of([
+                {{ key: 'Mod-Enter', run: () => {{ window.runQuery(); return true; }} }},
+                ...cmCommands.defaultKeymap
+              ]);
+
+              const state = cmState.EditorState.create({{
+                doc: this.initialValue,
+                extensions: [
+                  cmView.keymap.of(cmCommands.defaultKeymap),
+                  onRunShortcut,
+                  cmSql.sql({{ upperCaseKeywords: true }}),
+                  cmView.EditorView.lineWrapping,
+                  customTheme
+                ]
+              }});
+
+              this.view = new cmView.EditorView({{ state, parent: this.container }});
+            }}
+
+            _mountFallback() {{
+              const textarea = document.createElement('textarea');
+              textarea.className = 'editor-fallback';
+              textarea.value = this.initialValue;
+              textarea.addEventListener('keydown', (event) => {{
+                if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {{
+                  event.preventDefault();
+                  window.runQuery();
+                }}
+              }});
+              this.container.innerHTML = '';
+              this.container.append(textarea);
+              this.fallback = textarea;
+            }}
+
+            getValue() {{
+              if (this.view) {{
+                return this.view.state.doc.toString();
+              }}
+              return this.fallback ? this.fallback.value : '';
+            }}
+
+            setValue(value) {{
+              if (this.view) {{
+                const transaction = this.view.state.update({{
+                  changes: {{ from: 0, to: this.view.state.doc.length, insert: value }}
+                }});
+                this.view.dispatch(transaction);
+                this.view.focus();
+                return;
+              }}
+              if (this.fallback) {{
+                this.fallback.value = value;
+                this.fallback.focus();
+              }}
+            }}
+          }}
+
+          const statusEl = document.getElementById('query-status');
+          const metaEl = document.getElementById('result-meta');
+          const resultArea = document.getElementById('result-area');
+          const runBtn = document.getElementById('run-query');
+          const resetBtn = document.getElementById('reset-query');
+          const hintBtn = document.getElementById('show-hint');
+          const hintBox = document.getElementById('hint-box');
+
+          const editor = new SqlEditor(document.getElementById('sql-editor'), LESSON_CONTEXT.starterQuery);
+          editor.mount();
+
+          function setLoading(loading) {{
+            runBtn.disabled = loading;
+            resetBtn.disabled = loading;
+            if (loading) {{
+              statusEl.className = 'status loading';
+              statusEl.textContent = 'Wykonywanie zapytania...';
+            }}
+          }}
+
+          function renderTable(columns, rows) {{
+            if (!columns.length) {{
+              return '<p class="muted">Zapytanie nie zwróciło kolumn.</p>';
+            }}
+            const header = columns.map((column) => `<th>${{escapeHtml(String(column))}}</th>`).join('');
+            const body = rows.map((row) => `<tr>${{row.map((cell) => `<td>${{escapeHtml(String(cell ?? 'NULL'))}}</td>`).join('')}}</tr>`).join('');
+            return `<table><thead><tr>${{header}}</tr></thead><tbody>${{body}}</tbody></table>`;
+          }}
+
+          function escapeHtml(text) {{
+            return text
+              .replaceAll('&', '&amp;')
+              .replaceAll('<', '&lt;')
+              .replaceAll('>', '&gt;')
+              .replaceAll('"', '&quot;')
+              .replaceAll("'", '&#39;');
+          }}
+
+          window.runQuery = async function runQuery() {{
+            const sql = editor.getValue().trim();
+            if (!sql) {{
+              statusEl.className = 'status error';
+              statusEl.textContent = 'Zapytanie nie może być puste.';
+              return;
+            }}
+
+            setLoading(true);
+            resultArea.innerHTML = '';
+            metaEl.textContent = '';
+
+            try {{
+              const response = await fetch('/execute', {{
+                method: 'POST',
+                headers: {{ 'Content-Type': 'application/json' }},
+                body: JSON.stringify({{ lessonId: LESSON_CONTEXT.slug, sql }})
+              }});
+              const payload = await response.json();
+
+              if (!response.ok) {{
+                throw new Error(payload.detail || 'Nie udało się wykonać zapytania.');
+              }}
+
+              const hasError = Boolean(payload.error);
+              statusEl.className = hasError ? 'status error' : 'status success';
+              statusEl.textContent = hasError
+                ? `Błąd: ${{payload.error}}`
+                : `Ocena ćwiczenia: ${{payload.gradingStatus.toUpperCase()}} — ${{payload.feedback}}`;
+
+              metaEl.textContent = `Czas wykonania: ${{payload.executionMs}} ms${{payload.truncated ? ' (wynik przycięty)' : ''}}`;
+              resultArea.innerHTML = hasError ? '' : renderTable(payload.columns || [], payload.rows || []);
+            }} catch (error) {{
+              statusEl.className = 'status error';
+              statusEl.textContent = `Błąd sieci: ${{error.message}}`;
+            }} finally {{
+              setLoading(false);
+            }}
+          }};
+
+          runBtn.addEventListener('click', () => window.runQuery());
+          resetBtn.addEventListener('click', () => {{
+            editor.setValue(LESSON_CONTEXT.starterQuery);
+            statusEl.className = 'status muted';
+            statusEl.textContent = 'Zapytanie zresetowane do wartości startowej.';
+            resultArea.innerHTML = '';
+            metaEl.textContent = '';
+          }});
+
+          hintBtn.addEventListener('click', () => {{
+            const hints = LESSON_CONTEXT.solutionHints || [];
+            if (!hints.length) {{
+              hintBox.hidden = false;
+              hintBox.textContent = 'Brak podpowiedzi dla tej lekcji.';
+              return;
+            }}
+            const existing = Number(hintBox.dataset.index || 0);
+            const next = existing % hints.length;
+            hintBox.hidden = false;
+            hintBox.textContent = `Podpowiedź ${{next + 1}}/${{hints.length}}: ${{hints[next]}}`;
+            hintBox.dataset.index = String(next + 1);
+          }});
+        </script>
         """,
         title=f"{lesson['title']} – Kurs SQL",
     )

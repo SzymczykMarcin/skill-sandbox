@@ -37,5 +37,6 @@
         "LIMIT"
       ]
     }
-  }
+  },
+  "starterQuery": "SELECT * FROM posts ORDER BY published_at DESC LIMIT 10;"
 }

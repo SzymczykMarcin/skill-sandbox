@@ -40,5 +40,6 @@
         "ORDER BY"
       ]
     }
-  }
+  },
+  "starterQuery": "WITH ranked AS (SELECT product_id, category_id, sales, ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY sales DESC) AS rn FROM product_sales) SELECT * FROM ranked WHERE rn <= 3;"
 }

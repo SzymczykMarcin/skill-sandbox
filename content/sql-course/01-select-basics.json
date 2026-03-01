@@ -35,5 +35,6 @@
     "semanticRules": {
       "requiredClauses": []
     }
-  }
+  },
+  "starterQuery": "SELECT id, name FROM customers;"
 }

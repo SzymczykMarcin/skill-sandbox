@@ -40,6 +40,32 @@ class ResetDbResponse(BaseModel):
     message: str
 
 
+class LessonSummaryResponse(BaseModel):
+    slug: str
+    title: str
+    level: str
+    order: int
+    description: str | None = None
+
+
+class LessonDetailResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    slug: str
+    title: str
+    level: str
+    order: int
+    intro: str
+    explanation: str
+    examples: list[dict[str, str]]
+    exercise: str
+    solutionHints: list[str]
+    expectedQueryPatterns: list[str]
+    validation: dict[str, object]
+    starterQuery: str
+
+
 repo_root = Path(__file__).resolve().parents[1]
 runtime_dir = Path(os.getenv("SQLITE_RUNTIME_DIR", repo_root / ".runtime/sqlite"))
 base_db_path_raw = os.getenv("SQLITE_BASE_DB_PATH")
@@ -98,6 +124,37 @@ def load_lessons() -> list[dict[str, object]]:
 
     lessons.sort(key=lambda lesson: int(lesson["order"]))
     return lessons
+
+
+def get_lesson_by_slug(slug: str) -> dict[str, object]:
+    lessons = load_lessons()
+    lessons_by_slug = {str(lesson["slug"]): lesson for lesson in lessons}
+
+    if not slug or slug not in lessons_by_slug:
+        raise HTTPException(status_code=404, detail="Nie znaleziono lekcji o podanym slug")
+
+    return lessons_by_slug[slug]
+
+
+@app.get("/lessons", response_model=list[LessonSummaryResponse])
+def get_lessons() -> list[LessonSummaryResponse]:
+    lessons = load_lessons()
+    return [
+        LessonSummaryResponse(
+            slug=str(lesson["slug"]),
+            title=str(lesson["title"]),
+            level=str(lesson["level"]),
+            order=int(lesson["order"]),
+            description=str(lesson.get("intro")) if lesson.get("intro") is not None else None,
+        )
+        for lesson in lessons
+    ]
+
+
+@app.get("/lessons/{slug}", response_model=LessonDetailResponse)
+def get_lesson(slug: str) -> LessonDetailResponse:
+    lesson = get_lesson_by_slug(slug)
+    return LessonDetailResponse.model_validate(lesson)
 
 
 @app.get("/kurs/sql", response_class=HTMLResponse)

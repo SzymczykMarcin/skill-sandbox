@@ -20,3 +20,33 @@ Konfiguracja przez zmienne środowiskowe:
 
 - `SQLITE_RUNTIME_DIR` – katalog runtime (domyślnie `.runtime/sqlite`)
 - `SQLITE_BASE_DB_PATH` – pełna ścieżka do bazowego snapshotu
+
+## Backend API (FastAPI)
+
+Uruchomienie lokalne:
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+Endpoint `POST /execute` przyjmuje payload:
+
+```json
+{
+  "lessonId": "01-select-basics",
+  "sql": "SELECT id, email FROM users"
+}
+```
+
+I zwraca ustandaryzowany wynik:
+
+- `columns`: nazwy kolumn,
+- `rows`: zwrócone rekordy (maksymalnie `SQL_MAX_ROWS`, domyślnie 200),
+- `executionMs`: czas wykonania,
+- `error`: komunikat błędu (lub `null`),
+- `truncated`: flaga przycięcia wyniku.
+
+Zmienne środowiskowe backendu:
+
+- `SQL_QUERY_TIMEOUT_S` – limit czasu wykonania pojedynczego zapytania (domyślnie `3`),
+- `SQL_MAX_ROWS` – limit liczby zwracanych rekordów (domyślnie `200`).

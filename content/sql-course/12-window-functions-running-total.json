@@ -23,5 +23,18 @@
   ],
   "expectedQueryPatterns": [
     "SUM\\(total\\) OVER \\(PARTITION BY customer_id ORDER BY created_at\\)"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT id, customer_id, created_at, total, SUM(total) OVER (PARTITION BY customer_id ORDER BY created_at) AS running_total FROM orders",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0001
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "WINDOW"
+      ]
+    }
+  }
 }

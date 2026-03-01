@@ -23,5 +23,19 @@
   ],
   "expectedQueryPatterns": [
     "GROUP BY author_id HAVING COUNT\\(\\*\\) > 3"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT author_id, COUNT(*) AS article_count FROM articles GROUP BY author_id HAVING COUNT(*) > 3",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "GROUP BY",
+        "HAVING"
+      ]
+    }
+  }
 }

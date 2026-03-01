@@ -23,5 +23,18 @@
   ],
   "expectedQueryPatterns": [
     "COALESCE\\(discount,\\s*0\\) AS discount_value"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT id, name, COALESCE(discount, 0) AS discount_value FROM products",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0001
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "COALESCE"
+      ]
+    }
+  }
 }

@@ -15,8 +15,11 @@ REQUIRED_FIELDS = {
     "exercise",
     "solutionHints",
     "expectedQueryPatterns",
+    "validation",
 }
 ALLOWED_LEVELS = {"beginner", "intermediate", "advanced"}
+REQUIRED_VALIDATION_FIELDS = {"expectedSql", "comparison", "semanticRules"}
+REQUIRED_COMPARISON_FIELDS = {"ignoreRowOrder", "ignoreColumnOrder", "numericTolerance"}
 
 
 def validate_content_dir(content_dir: Path) -> int:
@@ -92,6 +95,43 @@ def validate_content_dir(content_dir: Path) -> int:
             errors.append(
                 f"{file_path}: pole 'expectedQueryPatterns' musi być niepustą listą"
             )
+
+        validation = data.get("validation")
+        if not isinstance(validation, dict):
+            errors.append(f"{file_path}: pole 'validation' musi być obiektem")
+            continue
+
+        missing_validation = sorted(REQUIRED_VALIDATION_FIELDS - set(validation.keys()))
+        if missing_validation:
+            errors.append(
+                f"{file_path}: brak pól validation: {', '.join(missing_validation)}"
+            )
+            continue
+
+        if not isinstance(validation.get("expectedSql"), str) or not validation["expectedSql"].strip():
+            errors.append(f"{file_path}: validation.expectedSql musi być niepustym stringiem")
+
+        comparison = validation.get("comparison")
+        if not isinstance(comparison, dict):
+            errors.append(f"{file_path}: validation.comparison musi być obiektem")
+        else:
+            missing_comparison = sorted(REQUIRED_COMPARISON_FIELDS - set(comparison.keys()))
+            if missing_comparison:
+                errors.append(
+                    f"{file_path}: brak pól validation.comparison: {', '.join(missing_comparison)}"
+                )
+            if not isinstance(comparison.get("ignoreRowOrder"), bool):
+                errors.append(f"{file_path}: validation.comparison.ignoreRowOrder musi być bool")
+            if not isinstance(comparison.get("ignoreColumnOrder"), bool):
+                errors.append(f"{file_path}: validation.comparison.ignoreColumnOrder musi być bool")
+            if not isinstance(comparison.get("numericTolerance"), (int, float)):
+                errors.append(f"{file_path}: validation.comparison.numericTolerance musi być liczbą")
+
+        semantic_rules = validation.get("semanticRules")
+        if not isinstance(semantic_rules, dict):
+            errors.append(f"{file_path}: validation.semanticRules musi być obiektem")
+        elif not isinstance(semantic_rules.get("requiredClauses", []), list):
+            errors.append(f"{file_path}: validation.semanticRules.requiredClauses musi być listą")
 
     if orders:
         min_order = min(orders)

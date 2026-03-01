@@ -23,5 +23,18 @@
   ],
   "expectedQueryPatterns": [
     "SELECT country, COUNT\\(\\*\\) FROM users GROUP BY country"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT country, COUNT(*) AS user_count FROM users GROUP BY country",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "GROUP BY"
+      ]
+    }
+  }
 }

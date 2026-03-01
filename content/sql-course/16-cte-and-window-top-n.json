@@ -25,5 +25,20 @@
     "WITH",
     "ROW_NUMBER\\(\\) OVER \\(PARTITION BY department_id ORDER BY salary DESC\\)",
     "WHERE rn <= 2"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "WITH ranked_salaries AS (SELECT id, department_id, salary, ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rn FROM employees) SELECT id, department_id, salary, rn FROM ranked_salaries WHERE rn <= 2 ORDER BY department_id, rn",
+    "comparison": {
+      "ignoreRowOrder": false,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "WITH",
+        "WINDOW",
+        "ORDER BY"
+      ]
+    }
+  }
 }

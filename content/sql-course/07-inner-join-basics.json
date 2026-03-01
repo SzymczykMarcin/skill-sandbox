@@ -23,5 +23,18 @@
   "expectedQueryPatterns": [
     "FROM orders .*JOIN order_items",
     "ON order_items\\.order_id\\s*=\\s*orders\\.id"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT orders.id AS order_id, order_items.quantity FROM orders INNER JOIN order_items ON order_items.order_id = orders.id",
+    "comparison": {
+      "ignoreRowOrder": true,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "JOIN"
+      ]
+    }
+  }
 }

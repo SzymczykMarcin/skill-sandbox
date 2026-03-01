@@ -6,6 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from backend.exercise_grader import ExerciseGrader
 from backend.sql_runner import SqlRunner, SqlValidationError
 
 
@@ -20,6 +21,8 @@ class ExecuteResponse(BaseModel):
     executionMs: float
     error: str | None
     truncated: bool
+    gradingStatus: str
+    feedback: str
 
 
 repo_root = Path(__file__).resolve().parents[1]
@@ -35,6 +38,7 @@ runner = SqlRunner(
     query_timeout_s=float(os.getenv("SQL_QUERY_TIMEOUT_S", "3")),
     max_rows=int(os.getenv("SQL_MAX_ROWS", "200")),
 )
+grader = ExerciseGrader(lessons_dir=repo_root / "content/sql-course", runner=runner)
 
 app = FastAPI()
 
@@ -43,12 +47,15 @@ app = FastAPI()
 def execute(request: ExecuteRequest) -> ExecuteResponse:
     try:
         result = runner.execute(lesson_id=request.lessonId, sql=request.sql)
+        grade_result = grader.grade(lesson_id=request.lessonId, sql=request.sql, actual=result)
         return ExecuteResponse(
             columns=result.columns,
             rows=result.rows,
             executionMs=round(result.execution_ms, 3),
             error=result.error,
             truncated=result.truncated,
+            gradingStatus=grade_result.status,
+            feedback=grade_result.feedback,
         )
     except SqlValidationError as exc:
         return ExecuteResponse(
@@ -57,4 +64,6 @@ def execute(request: ExecuteRequest) -> ExecuteResponse:
             executionMs=0.0,
             error=str(exc),
             truncated=False,
+            gradingStatus="fail",
+            feedback=f"❌ Zapytanie nie przeszło walidacji: {exc}",
         )

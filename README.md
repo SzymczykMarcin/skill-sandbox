@@ -44,7 +44,14 @@ I zwraca ustandaryzowany wynik:
 - `rows`: zwrócone rekordy (maksymalnie `SQL_MAX_ROWS`, domyślnie 200),
 - `executionMs`: czas wykonania,
 - `error`: komunikat błędu (lub `null`),
-- `truncated`: flaga przycięcia wyniku.
+- `truncated`: flaga przycięcia wyniku,
+- `gradingStatus`: `pass` lub `fail` po walidacji ćwiczenia,
+- `feedback`: czytelny komunikat po polsku z oceną rozwiązania.
+
+Każda lekcja ma teraz sekcję `validation` z:
+- zapytaniem wzorcowym (`expectedSql`),
+- regułami porównania (`ignoreRowOrder`, `ignoreColumnOrder`, `numericTolerance`),
+- opcjonalnymi wymaganiami semantycznymi (`requiredClauses`, np. `JOIN`, `GROUP BY`).
 
 Zmienne środowiskowe backendu:
 

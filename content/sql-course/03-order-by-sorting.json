@@ -22,5 +22,18 @@
   ],
   "expectedQueryPatterns": [
     "ORDER BY salary DESC"
-  ]
+  ],
+  "validation": {
+    "expectedSql": "SELECT id, user_id, department_id, salary, hired_at FROM employees ORDER BY salary DESC",
+    "comparison": {
+      "ignoreRowOrder": false,
+      "ignoreColumnOrder": false,
+      "numericTolerance": 0.0
+    },
+    "semanticRules": {
+      "requiredClauses": [
+        "ORDER BY"
+      ]
+    }
+  }
 }

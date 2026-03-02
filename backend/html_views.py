@@ -112,7 +112,7 @@ def render_lesson_page(
               <ul>{examples_html}</ul>
             </section>
 
-            <section class='surface-card'>
+            <section class='surface-card callout callout-exercise'>
               <h2>Ćwiczenie</h2>
               <p>{escape(str(lesson['exercise']))}</p>
             </section>
@@ -130,7 +130,7 @@ def render_lesson_page(
                 <button id='show-hint' class='btn' type='button'>Pokaż podpowiedź</button>
                 <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
               </div>
-              <div id='hint-box' class='status muted' hidden></div>
+              <div id='hint-box' class='callout callout-hint' hidden></div>
               <div id='query-status' class='status muted'>Gotowe do uruchomienia zapytania.</div>
               <div id='result-meta' class='meta'></div>
               <div id='result-area'></div>

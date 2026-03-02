@@ -16,6 +16,15 @@
   --color-warning-text: #7a5b00;
   --color-completed-bg: #dcfce7;
   --color-completed-text: #196b2f;
+  --color-pre-bg: #0f172a;
+  --color-pre-border: #334155;
+  --color-pre-text: #e2e8f0;
+  --color-callout-exercise-bg: #eff6ff;
+  --color-callout-exercise-border: #93c5fd;
+  --color-callout-exercise-text: #1e3a8a;
+  --color-callout-hint-bg: #fffbeb;
+  --color-callout-hint-border: #fcd34d;
+  --color-callout-hint-text: #92400e;
 
   --space-1: 0.15rem;
   --space-2: 0.4rem;
@@ -36,6 +45,12 @@
   --font-size-sm: 0.86rem;
   --font-size-md: 0.92rem;
   --font-size-base: 0.95rem;
+  --font-size-h2: 1.35rem;
+  --font-size-h1: 2rem;
+
+  --line-height-tight: 1.2;
+  --line-height-base: 1.55;
+  --line-height-relaxed: 1.7;
 
   --font-family-base: Arial, sans-serif;
   --font-family-mono: Menlo, Consolas, monospace;
@@ -45,18 +60,36 @@ body {
   font-family: var(--font-family-base);
   margin: var(--space-9) auto;
   max-width: 1160px;
-  line-height: 1.5;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
   padding: 0 var(--space-6);
   background: var(--color-bg);
   color: var(--color-text);
 }
 
-h1,
+h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-tight);
+}
+
 h2 {
-  margin-bottom: var(--space-3);
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-tight);
+}
+
+p {
+  margin: 0 0 var(--space-6);
+  line-height: var(--line-height-relaxed);
+}
+
+section + section {
+  margin-top: var(--space-6);
 }
 
 ul {
+  margin: 0;
   padding-left: var(--space-7);
 }
 
@@ -103,6 +136,8 @@ ul {
 
 .lesson-description {
   margin: 0;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
 }
 
 .lesson-layout {
@@ -133,6 +168,10 @@ ul {
   margin-top: 0;
 }
 
+.surface-card > :last-child {
+  margin-bottom: 0;
+}
+
 .nav {
   display: flex;
   gap: var(--space-5);
@@ -155,14 +194,20 @@ ul {
 }
 
 pre {
-  background: var(--color-surface-muted);
-  padding: var(--space-5);
+  background: var(--color-pre-bg);
+  color: var(--color-pre-text);
+  border: 1px solid var(--color-pre-border);
+  padding: var(--space-6);
   border-radius: var(--radius-sm);
   overflow-x: auto;
+  margin: var(--space-4) 0 0;
+  line-height: var(--line-height-base);
 }
 
 .muted {
   color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
 }
 
 .editor-shell {
@@ -206,18 +251,28 @@ button.btn:disabled {
 .status {
   margin-top: var(--space-5);
   font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid transparent;
+  background: var(--color-surface-subtle);
 }
 
 .status.loading {
   color: var(--color-primary);
+  border-left-color: var(--color-primary);
 }
 
 .status.error {
   color: var(--color-error);
+  border-left-color: var(--color-error);
+  background: #fff1f2;
 }
 
 .status.success {
   color: var(--color-success);
+  border-left-color: var(--color-success);
+  background: #ecfdf3;
 }
 
 table {
@@ -243,6 +298,7 @@ th {
   margin-top: var(--space-3);
   color: var(--color-text-meta);
   font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
 }
 
 .lesson-status {
@@ -250,18 +306,46 @@ th {
   font-size: var(--font-size-sm);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
-  background: #efefef;
-  color: #444;
+  font-weight: 700;
+  background: #f4f4f5;
+  color: #3f3f46;
+  border: 1px solid #d4d4d8;
 }
 
 .lesson-status.in-progress {
   background: var(--color-warning-bg);
   color: var(--color-warning-text);
+  border-color: #facc15;
 }
 
 .lesson-status.completed {
   background: var(--color-completed-bg);
   color: var(--color-completed-text);
+  border-color: #86efac;
+}
+
+.callout {
+  border: 1px solid;
+  border-left-width: 6px;
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.callout h2 {
+  margin-bottom: var(--space-3);
+}
+
+.callout-exercise {
+  background: var(--color-callout-exercise-bg);
+  border-color: var(--color-callout-exercise-border);
+  color: var(--color-callout-exercise-text);
+}
+
+.callout-hint {
+  margin-top: var(--space-5);
+  background: var(--color-callout-hint-bg);
+  border-color: var(--color-callout-hint-border);
+  color: var(--color-callout-hint-text);
 }
 
 .toolbar {

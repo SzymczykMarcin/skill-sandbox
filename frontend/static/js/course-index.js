@@ -21,13 +21,14 @@
       if (status === 'completed') {
         el.textContent = 'Ukończona';
         el.classList.add('completed');
-        el.classList.remove('in-progress');
+        el.classList.remove('in-progress', 'not-started');
       } else if (status === 'in-progress') {
         el.textContent = 'W trakcie';
         el.classList.add('in-progress');
-        el.classList.remove('completed');
+        el.classList.remove('completed', 'not-started');
       } else {
         el.textContent = 'Nie rozpoczęta';
+        el.classList.add('not-started');
         el.classList.remove('in-progress', 'completed');
       }
     }

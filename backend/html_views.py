@@ -27,11 +27,11 @@ def render_course_index(lessons: list[dict[str, object]]) -> str:
             "<article class='lesson-card'>"
             "<div class='lesson-card-header'>"
             f"<span class='lesson-number'>Lekcja #{lesson['order']}</span>"
-            f"<span class='lesson-status' data-lesson-status='{escape(str(lesson['slug']))}'>Nie rozpoczęta</span>"
+            f"<span class='lesson-status not-started' data-lesson-status='{escape(str(lesson['slug']))}'>Nie rozpoczęta</span>"
             "</div>"
             f"<h2><a href='/kurs/sql/{escape(str(lesson['slug']))}'>{escape(str(lesson['title']))}</a></h2>"
             f"<p class='lesson-description muted'>{escape(str(lesson.get('intro') or lesson.get('exercise') or 'Poznaj najważniejsze zagadnienia tej lekcji.'))}</p>"
-            f"<a class='btn' href='/kurs/sql/{escape(str(lesson['slug']))}'>Otwórz lekcję</a>"
+            f"<a class='btn btn-primary' href='/kurs/sql/{escape(str(lesson['slug']))}'>Otwórz lekcję</a>"
             "</article>"
         )
         for lesson in lessons
@@ -44,11 +44,11 @@ def render_course_index(lessons: list[dict[str, object]]) -> str:
             Przejdź przez kolejne lekcje i ćwicz SQL na żywych przykładach,
             żeby szybko budować poprawne zapytania.
           </p>
-          <a id='continue-learning' class='btn disabled' href='/kurs/sql'>Kontynuuj naukę</a>
+          <a id='continue-learning' class='btn btn-primary disabled' href='/kurs/sql'>Kontynuuj naukę</a>
         </section>
 
         <div class='toolbar'>
-          <button id='reset-progress' class='btn' type='button'>Resetuj postęp</button>
+          <button id='reset-progress' class='btn btn-secondary' type='button'>Resetuj postęp</button>
         </div>
         <section class='lessons-grid'>{lesson_items}</section>
         <script src='/static/js/progress.js'></script>
@@ -68,14 +68,14 @@ def render_lesson_page(
     )
 
     prev_button = (
-        f"<a class='btn' href='/kurs/sql/{escape(str(prev_lesson['slug']))}'>Poprzednie ćwiczenie</a>"
+        f"<a class='btn btn-secondary' href='/kurs/sql/{escape(str(prev_lesson['slug']))}'>Poprzednie ćwiczenie</a>"
         if prev_lesson
-        else "<span class='btn disabled'>Poprzednie ćwiczenie</span>"
+        else "<span class='btn btn-secondary disabled'>Poprzednie ćwiczenie</span>"
     )
     next_button = (
-        f"<a class='btn' href='/kurs/sql/{escape(str(next_lesson['slug']))}'>Następne ćwiczenie</a>"
+        f"<a class='btn btn-primary' href='/kurs/sql/{escape(str(next_lesson['slug']))}'>Następne ćwiczenie</a>"
         if next_lesson
-        else "<span class='btn disabled'>Następne ćwiczenie</span>"
+        else "<span class='btn btn-primary disabled'>Następne ćwiczenie</span>"
     )
 
     lesson_json = json.dumps(
@@ -125,9 +125,9 @@ def render_lesson_page(
                 <div id='sql-editor' class='editor-container'></div>
               </div>
               <div class='actions'>
-                <button id='run-query' class='btn' type='button'>Uruchom zapytanie</button>
-                <button id='reset-query' class='btn' type='button'>Resetuj zapytanie</button>
-                <button id='show-hint' class='btn' type='button'>Pokaż podpowiedź</button>
+                <button id='run-query' class='btn btn-primary' type='button'>Uruchom zapytanie</button>
+                <button id='reset-query' class='btn btn-secondary' type='button'>Resetuj zapytanie</button>
+                <button id='show-hint' class='btn btn-ghost' type='button'>Pokaż podpowiedź</button>
                 <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
               </div>
               <div id='hint-box' class='callout callout-hint' hidden></div>
@@ -139,7 +139,7 @@ def render_lesson_page(
             <nav class='nav'>
               {prev_button}
               {next_button}
-              <a class='btn' href='/kurs/sql'>Wróć do spisu</a>
+              <a class='btn btn-ghost' href='/kurs/sql'>Wróć do spisu</a>
             </nav>
           </aside>
         </div>

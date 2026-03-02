@@ -146,15 +146,26 @@
     }
   }
 
+  function renderEmptyState(title, description) {
+    return `<section class="empty-state"><h3>${escapeHtml(title)}</h3><p class="muted">${escapeHtml(description)}</p></section>`;
+  }
+
+  function renderErrorPanel(message, details) {
+    return `<section class="error-panel"><h3>Błąd wykonania zapytania</h3><p>${escapeHtml(message)}</p><p class="muted">${escapeHtml(details)}</p></section>`;
+  }
+
   function renderTable(columns, rows) {
     if (!columns.length) {
-      return '<p class="muted">Zapytanie nie zwróciło kolumn.</p>';
+      return renderEmptyState('Brak kolumn w wyniku', 'Zapytanie wykonało się poprawnie, ale nie zwróciło żadnych nazwanych kolumn.');
+    }
+    if (!rows.length) {
+      return renderEmptyState('Brak rekordów', 'Zapytanie nie zwróciło żadnych danych dla podanych warunków.');
     }
     const header = columns.map((column) => `<th>${escapeHtml(String(column))}</th>`).join('');
     const body = rows
       .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(String(cell ?? 'NULL'))}</td>`).join('')}</tr>`)
       .join('');
-    return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
+    return `<div class="result-table-wrap"><table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
   function escapeHtml(text) {
@@ -207,10 +218,13 @@
       }
 
       metaEl.textContent = `Czas wykonania: ${payload.executionMs} ms${payload.truncated ? ' (wynik przycięty)' : ''}`;
-      resultArea.innerHTML = hasError ? '' : renderTable(payload.columns || [], payload.rows || []);
+      resultArea.innerHTML = hasError
+        ? renderErrorPanel(payload.error || 'Wystąpił błąd SQL.', 'Sprawdź składnię zapytania i spróbuj ponownie.')
+        : renderTable(payload.columns || [], payload.rows || []);
     } catch (error) {
       statusEl.className = 'status error';
       statusEl.textContent = `Błąd sieci: ${error.message}`;
+      resultArea.innerHTML = renderErrorPanel('Nie udało się połączyć z serwerem.', error.message || 'Sprawdź połączenie sieciowe i ponów próbę.');
     } finally {
       setLoading(false);
     }

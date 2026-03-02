@@ -44,7 +44,7 @@
 body {
   font-family: var(--font-family-base);
   margin: var(--space-9) auto;
-  max-width: 860px;
+  max-width: 1160px;
   line-height: 1.5;
   padding: 0 var(--space-6);
   background: var(--color-bg);
@@ -58,6 +58,79 @@ h2 {
 
 ul {
   padding-left: var(--space-7);
+}
+
+.hero {
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+.lesson-card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.lesson-card h2 {
+  margin: 0;
+}
+
+.lesson-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.lesson-number {
+  color: var(--color-text-meta);
+  font-size: var(--font-size-md);
+}
+
+.lesson-description {
+  margin: 0;
+}
+
+.lesson-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
+  gap: var(--space-8);
+}
+
+.lesson-main {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.lesson-sidebar {
+  position: sticky;
+  top: var(--space-8);
+  align-self: start;
+}
+
+.surface-card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: var(--space-6);
+}
+
+.surface-card > :first-child {
+  margin-top: 0;
 }
 
 .nav {
@@ -195,6 +268,38 @@ th {
   display: flex;
   gap: var(--space-5);
   flex-wrap: wrap;
-  margin: var(--space-6) 0 var(--space-8);
+  margin: 0 0 var(--space-8);
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .lessons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    margin: var(--space-8) auto;
+    padding: 0 var(--space-5);
+  }
+
+  .hero,
+  .surface-card,
+  .lesson-card {
+    padding: var(--space-5);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

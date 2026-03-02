@@ -7,11 +7,24 @@ from html import escape
 def render_layout(content: str, title: str) -> str:
     return f"""
 <!doctype html>
-<html lang="pl">
+<html lang="pl" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{escape(title)}</title>
+    <script>
+      (() => {{
+        try {{
+          const storageKey = 'sql-course-theme-v1';
+          const storedTheme = window.localStorage.getItem(storageKey);
+          const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          const resolvedTheme = storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : preferredTheme;
+          document.documentElement.dataset.theme = resolvedTheme;
+        }} catch (_error) {{
+          document.documentElement.dataset.theme = 'light';
+        }}
+      }})();
+    </script>
     <link rel="stylesheet" href="/static/css/sql-course.css" />
   </head>
   <body>
@@ -48,10 +61,12 @@ def render_course_index(lessons: list[dict[str, object]]) -> str:
         </section>
 
         <div class='toolbar'>
+          <button id='theme-toggle' class='btn btn-secondary' type='button' aria-pressed='false'>Tryb ciemny</button>
           <button id='reset-progress' class='btn btn-secondary' type='button'>Resetuj postęp</button>
         </div>
         <section class='lessons-grid'>{lesson_items}</section>
         <script src='/static/js/progress.js'></script>
+        <script src='/static/js/theme.js'></script>
         <script src='/static/js/course-index.js'></script>
     """
     return render_layout(content=content, title="Kurs SQL – spis lekcji")
@@ -96,6 +111,10 @@ def render_lesson_page(
           <h1>{escape(str(lesson['title']))}</h1>
           <p class='muted'>Lekcja #{lesson['order']}</p>
         </header>
+
+        <div class='toolbar'>
+          <button id='theme-toggle' class='btn btn-secondary' type='button' aria-pressed='false'>Tryb ciemny</button>
+        </div>
 
         <div class='lesson-layout'>
           <main id='lesson-main-content' class='lesson-main'>
@@ -152,6 +171,7 @@ def render_lesson_page(
 
         <script>window.LESSON_CONTEXT = {lesson_json};</script>
         <script src='/static/js/progress.js'></script>
+        <script src='/static/js/theme.js'></script>
         <script src='/static/js/lesson-page.js'></script>
     """
     return render_layout(content=content, title=f"{lesson['title']} – Kurs SQL")

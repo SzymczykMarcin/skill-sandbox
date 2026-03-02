@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --color-bg: #ffffff;
   --color-surface-muted: #f4f4f4;
   --color-surface-subtle: #f8fafc;
@@ -26,10 +27,17 @@
   --color-success: #027a48;
   --color-warning-bg: #fffaeb;
   --color-warning-text: #b54708;
+  --color-warning-border: #fedf89;
   --color-completed-bg: #ecfdf3;
   --color-completed-text: #05603a;
+  --color-completed-border: #abefc6;
   --color-not-started-bg: #f2f4f7;
   --color-not-started-text: #344054;
+  --color-not-started-border: #d0d5dd;
+
+  --color-danger-bg: #fef3f2;
+  --color-danger-border: #fecdca;
+  --color-striped-row-bg: #fcfcfd;
 
   --color-focus-ring: #1d4ed8;
   --color-focus-ring-soft: rgb(29 78 216 / 0.24);
@@ -75,6 +83,61 @@
 
   --font-family-base: Arial, sans-serif;
   --font-family-mono: Menlo, Consolas, monospace;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #0f172a;
+  --color-surface-muted: #111827;
+  --color-surface-subtle: #1f2937;
+  --color-surface-elevated: #0b1220;
+  --color-text: #e5e7eb;
+  --color-text-muted: #cbd5e1;
+  --color-text-meta: #94a3b8;
+  --color-border-default: #334155;
+  --color-border-soft: #1e293b;
+  --color-border-muted: #475569;
+  --color-border-disabled: #334155;
+
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-primary-soft: #1e3a8a;
+  --color-secondary-bg: #111827;
+  --color-secondary-hover: #1f2937;
+  --color-secondary-text: #e5e7eb;
+  --color-ghost-hover: #1f2937;
+  --color-destructive: #fecaca;
+  --color-destructive-hover: #fda4af;
+  --color-destructive-soft: #4c1d1d;
+
+  --color-error: #fca5a5;
+  --color-success: #86efac;
+  --color-warning-bg: #422006;
+  --color-warning-text: #fcd34d;
+  --color-warning-border: #78350f;
+  --color-completed-bg: #052e16;
+  --color-completed-text: #86efac;
+  --color-completed-border: #166534;
+  --color-not-started-bg: #111827;
+  --color-not-started-text: #cbd5e1;
+  --color-not-started-border: #334155;
+
+  --color-danger-bg: #450a0a;
+  --color-danger-border: #7f1d1d;
+  --color-striped-row-bg: #111827;
+
+  --color-focus-ring: #60a5fa;
+  --color-focus-ring-soft: rgb(96 165 250 / 0.28);
+
+  --color-pre-bg: #020617;
+  --color-pre-border: #334155;
+  --color-pre-text: #e2e8f0;
+  --color-callout-exercise-bg: #172554;
+  --color-callout-exercise-border: #1d4ed8;
+  --color-callout-exercise-text: #bfdbfe;
+  --color-callout-hint-bg: #451a03;
+  --color-callout-hint-border: #92400e;
+  --color-callout-hint-text: #fcd34d;
 }
 
 body {
@@ -322,9 +385,9 @@ button:focus-visible,
 .btn.disabled,
 .btn:disabled,
 button.btn:disabled {
-  color: #98a2b3;
+  color: var(--color-text-meta);
   border-color: var(--color-border-disabled);
-  background: #f9fafb;
+  background: var(--color-surface-subtle);
   pointer-events: none;
   cursor: not-allowed;
 }
@@ -396,19 +459,19 @@ button.btn {
 
 .status.loading {
   color: var(--color-primary-hover);
-  border-color: #bfdbfe;
+  border-color: var(--color-primary);
   background: var(--color-primary-soft);
 }
 
 .status.error {
   color: var(--color-error);
-  border-color: #fecdca;
-  background: #fef3f2;
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
 }
 
 .status.success {
   color: var(--color-success);
-  border-color: #a9efc5;
+  border-color: var(--color-completed-border);
   background: var(--color-completed-bg);
 }
 
@@ -445,7 +508,7 @@ th {
 }
 
 tbody tr:nth-child(even) {
-  background: #fcfcfd;
+  background: var(--color-striped-row-bg);
 }
 
 .meta {
@@ -477,7 +540,7 @@ tbody tr:nth-child(even) {
 .lesson-status.not-started {
   background: var(--color-not-started-bg);
   color: var(--color-not-started-text);
-  border-color: #d0d5dd;
+  border-color: var(--color-not-started-border);
 }
 
 .lesson-status.not-started::before {
@@ -487,7 +550,7 @@ tbody tr:nth-child(even) {
 .lesson-status.in-progress {
   background: var(--color-warning-bg);
   color: var(--color-warning-text);
-  border-color: #fedf89;
+  border-color: var(--color-warning-border);
 }
 
 .lesson-status.in-progress::before {
@@ -497,7 +560,7 @@ tbody tr:nth-child(even) {
 .lesson-status.completed {
   background: var(--color-completed-bg);
   color: var(--color-completed-text);
-  border-color: #abefc6;
+  border-color: var(--color-completed-border);
 }
 
 .lesson-status.completed::before {
@@ -521,8 +584,8 @@ tbody tr:nth-child(even) {
 
 .error-panel {
   border-style: solid;
-  border-color: #fecdca;
-  background: #fef3f2;
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
   color: var(--color-error);
 }
 
@@ -596,13 +659,13 @@ tbody tr:nth-child(even) {
 
 .toast-region.success {
   background: var(--color-completed-bg);
-  border-color: #abefc6;
+  border-color: var(--color-completed-border);
   color: var(--color-completed-text);
 }
 
 .toast-region.error {
-  background: #fef3f2;
-  border-color: #fecdca;
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
   color: var(--color-error);
 }
 

@@ -28,7 +28,23 @@
       ]);
 
       const customTheme = cmView.EditorView.theme({
-        '&': { minHeight: '220px', fontFamily: 'Menlo, Consolas, monospace', fontSize: '14px' },
+        '&': {
+          minHeight: '220px',
+          fontFamily: 'Menlo, Consolas, monospace',
+          fontSize: '14px',
+          color: 'var(--color-text)',
+          backgroundColor: 'var(--color-surface-elevated)',
+        },
+        '.cm-gutters': {
+          backgroundColor: 'var(--color-surface-subtle)',
+          color: 'var(--color-text-meta)',
+          borderRight: '1px solid var(--color-border-soft)',
+        },
+        '.cm-activeLine, .cm-activeLineGutter': {
+          backgroundColor: 'var(--color-surface-muted)',
+        },
+        '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--color-text)' },
+        '.cm-selectionBackground, ::selection': { backgroundColor: 'var(--color-primary-soft)' },
         '.cm-content': { minHeight: '220px' },
       });
 

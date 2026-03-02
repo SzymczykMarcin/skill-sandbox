@@ -24,20 +24,33 @@ def render_layout(content: str, title: str) -> str:
 def render_course_index(lessons: list[dict[str, object]]) -> str:
     lesson_items = "\n".join(
         (
-            f"<li><a href='/kurs/sql/{escape(str(lesson['slug']))}'>{escape(str(lesson['title']))}</a> "
-            f"<span class='muted'>(#{lesson['order']})</span>"
-            f"<span class='lesson-status' data-lesson-status='{escape(str(lesson['slug']))}'>Nie rozpoczęta</span></li>"
+            "<article class='lesson-card'>"
+            "<div class='lesson-card-header'>"
+            f"<span class='lesson-number'>Lekcja #{lesson['order']}</span>"
+            f"<span class='lesson-status' data-lesson-status='{escape(str(lesson['slug']))}'>Nie rozpoczęta</span>"
+            "</div>"
+            f"<h2><a href='/kurs/sql/{escape(str(lesson['slug']))}'>{escape(str(lesson['title']))}</a></h2>"
+            f"<p class='lesson-description muted'>{escape(str(lesson.get('intro') or lesson.get('exercise') or 'Poznaj najważniejsze zagadnienia tej lekcji.'))}</p>"
+            f"<a class='btn' href='/kurs/sql/{escape(str(lesson['slug']))}'>Otwórz lekcję</a>"
+            "</article>"
         )
         for lesson in lessons
     )
 
     content = f"""
-        <h1>Kurs SQL – spis lekcji</h1>
-        <div class='toolbar'>
+        <section class='hero'>
+          <h1>Kurs SQL – spis lekcji</h1>
+          <p class='muted'>
+            Przejdź przez kolejne lekcje i ćwicz SQL na żywych przykładach,
+            żeby szybko budować poprawne zapytania.
+          </p>
           <a id='continue-learning' class='btn disabled' href='/kurs/sql'>Kontynuuj naukę</a>
+        </section>
+
+        <div class='toolbar'>
           <button id='reset-progress' class='btn' type='button'>Resetuj postęp</button>
         </div>
-        <ul>{lesson_items}</ul>
+        <section class='lessons-grid'>{lesson_items}</section>
         <script src='/static/js/progress.js'></script>
         <script src='/static/js/course-index.js'></script>
     """
@@ -77,51 +90,59 @@ def render_lesson_page(
     )
 
     content = f"""
-        <h1>{escape(str(lesson['title']))}</h1>
-        <p class='muted'>Lekcja #{lesson['order']}</p>
+        <header>
+          <h1>{escape(str(lesson['title']))}</h1>
+          <p class='muted'>Lekcja #{lesson['order']}</p>
+        </header>
 
-        <section>
-          <h2>Wprowadzenie</h2>
-          <p>{escape(str(lesson['intro']))}</p>
-        </section>
+        <div class='lesson-layout'>
+          <main class='lesson-main'>
+            <section class='surface-card'>
+              <h2>Wprowadzenie</h2>
+              <p>{escape(str(lesson['intro']))}</p>
+            </section>
 
-        <section>
-          <h2>Objaśnienia</h2>
-          <p>{escape(str(lesson['explanation']))}</p>
-        </section>
+            <section class='surface-card'>
+              <h2>Objaśnienia</h2>
+              <p>{escape(str(lesson['explanation']))}</p>
+            </section>
 
-        <section>
-          <h2>Przykłady</h2>
-          <ul>{examples_html}</ul>
-        </section>
+            <section class='surface-card'>
+              <h2>Przykłady</h2>
+              <ul>{examples_html}</ul>
+            </section>
 
-        <section>
-          <h2>Ćwiczenie</h2>
-          <p>{escape(str(lesson['exercise']))}</p>
-        </section>
+            <section class='surface-card'>
+              <h2>Ćwiczenie</h2>
+              <p>{escape(str(lesson['exercise']))}</p>
+            </section>
+          </main>
 
-        <section>
-          <h2>SQL Playground</h2>
-          <div class='editor-shell'>
-            <div id='sql-editor' class='editor-container'></div>
-          </div>
-          <div class='actions'>
-            <button id='run-query' class='btn' type='button'>Uruchom zapytanie</button>
-            <button id='reset-query' class='btn' type='button'>Resetuj zapytanie</button>
-            <button id='show-hint' class='btn' type='button'>Pokaż podpowiedź</button>
-            <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
-          </div>
-          <div id='hint-box' class='status muted' hidden></div>
-          <div id='query-status' class='status muted'>Gotowe do uruchomienia zapytania.</div>
-          <div id='result-meta' class='meta'></div>
-          <div id='result-area'></div>
-        </section>
+          <aside class='lesson-sidebar'>
+            <section class='surface-card'>
+              <h2>SQL Playground</h2>
+              <div class='editor-shell'>
+                <div id='sql-editor' class='editor-container'></div>
+              </div>
+              <div class='actions'>
+                <button id='run-query' class='btn' type='button'>Uruchom zapytanie</button>
+                <button id='reset-query' class='btn' type='button'>Resetuj zapytanie</button>
+                <button id='show-hint' class='btn' type='button'>Pokaż podpowiedź</button>
+                <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
+              </div>
+              <div id='hint-box' class='status muted' hidden></div>
+              <div id='query-status' class='status muted'>Gotowe do uruchomienia zapytania.</div>
+              <div id='result-meta' class='meta'></div>
+              <div id='result-area'></div>
+            </section>
 
-        <nav class='nav'>
-          {prev_button}
-          {next_button}
-          <a class='btn' href='/kurs/sql'>Wróć do spisu</a>
-        </nav>
+            <nav class='nav'>
+              {prev_button}
+              {next_button}
+              <a class='btn' href='/kurs/sql'>Wróć do spisu</a>
+            </nav>
+          </aside>
+        </div>
 
         <script>window.LESSON_CONTEXT = {lesson_json};</script>
         <script src='/static/js/progress.js'></script>

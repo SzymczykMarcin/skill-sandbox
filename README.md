@@ -47,6 +47,11 @@ Przydatne opcje:
 .\start.ps1 -SkipVenv
 ```
 
+
+## Frontend
+
+- Przewodnik UI (tokeny, komponenty, zasady treści, DoD): `docs/frontend-ui-guide.md`
+
 ## Backend API (FastAPI)
 
 Uruchomienie lokalne:

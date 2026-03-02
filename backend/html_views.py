@@ -127,12 +127,16 @@ def render_lesson_page(
                 <div id='sql-editor' class='editor-container'></div>
               </div>
               <div class='actions'>
-                <button id='run-query' class='btn btn-primary' type='button'>Uruchom zapytanie</button>
+                <button id='run-query' class='btn btn-primary' type='button'>
+                  <span class='btn-spinner' aria-hidden='true'></span>
+                  <span class='btn-label'>Uruchom zapytanie</span>
+                </button>
                 <button id='reset-query' class='btn btn-secondary' type='button'>Resetuj zapytanie</button>
                 <button id='show-hint' class='btn btn-ghost' type='button'>Pokaż podpowiedź</button>
                 <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
               </div>
               <div id='hint-box' class='callout callout-hint' aria-live='polite' aria-atomic='true' hidden></div>
+              <div id='toast-region' class='toast-region' aria-live='polite' aria-atomic='true'></div>
               <div id='query-status' class='status muted' role='status' aria-live='polite' aria-atomic='true'>Gotowe do uruchomienia zapytania.</div>
               <div id='result-meta' class='meta'></div>
               <div id='result-area'></div>

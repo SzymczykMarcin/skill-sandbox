@@ -90,13 +90,15 @@ def render_lesson_page(
     )
 
     content = f"""
+        <a class='skip-link' href='#lesson-main-content'>Przejdź do treści lekcji</a>
+
         <header>
           <h1>{escape(str(lesson['title']))}</h1>
           <p class='muted'>Lekcja #{lesson['order']}</p>
         </header>
 
         <div class='lesson-layout'>
-          <main class='lesson-main'>
+          <main id='lesson-main-content' class='lesson-main'>
             <section class='surface-card'>
               <h2>Wprowadzenie</h2>
               <p>{escape(str(lesson['intro']))}</p>
@@ -130,13 +132,13 @@ def render_lesson_page(
                 <button id='show-hint' class='btn btn-ghost' type='button'>Pokaż podpowiedź</button>
                 <span class='muted'>Skrót: Ctrl/Cmd + Enter</span>
               </div>
-              <div id='hint-box' class='callout callout-hint' hidden></div>
-              <div id='query-status' class='status muted'>Gotowe do uruchomienia zapytania.</div>
+              <div id='hint-box' class='callout callout-hint' aria-live='polite' aria-atomic='true' hidden></div>
+              <div id='query-status' class='status muted' role='status' aria-live='polite' aria-atomic='true'>Gotowe do uruchomienia zapytania.</div>
               <div id='result-meta' class='meta'></div>
               <div id='result-area'></div>
             </section>
 
-            <nav class='nav'>
+            <nav class='nav' aria-label='Nawigacja pomiędzy lekcjami'>
               {prev_button}
               {next_button}
               <a class='btn btn-ghost' href='/kurs/sql'>Wróć do spisu</a>

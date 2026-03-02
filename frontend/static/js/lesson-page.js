@@ -137,12 +137,18 @@
     progress.lastVisitedLesson = LESSON_CONTEXT.slug;
   });
 
+
+  function announceStatus(message, tone = 'polite', toneClass = 'muted') {
+    statusEl.className = `status ${toneClass}`;
+    statusEl.setAttribute('aria-live', tone);
+    statusEl.textContent = message;
+  }
+
   function setLoading(loading) {
     runBtn.disabled = loading;
     resetBtn.disabled = loading;
     if (loading) {
-      statusEl.className = 'status loading';
-      statusEl.textContent = 'Wykonywanie zapytania...';
+      announceStatus('Wykonywanie zapytania...', 'polite', 'loading');
     }
   }
 
@@ -180,8 +186,7 @@
   window.runQuery = async function runQuery() {
     const sql = editor.getValue().trim();
     if (!sql) {
-      statusEl.className = 'status error';
-      statusEl.textContent = 'Zapytanie nie może być puste.';
+      announceStatus('Zapytanie nie może być puste.', 'assertive', 'error');
       return;
     }
 
@@ -202,10 +207,13 @@
       }
 
       const hasError = Boolean(payload.error);
-      statusEl.className = hasError ? 'status error' : 'status success';
-      statusEl.textContent = hasError
-        ? `Błąd: ${payload.error}`
-        : `Ocena ćwiczenia: ${payload.gradingStatus.toUpperCase()} — ${payload.feedback}`;
+      announceStatus(
+        hasError
+          ? `Błąd: ${payload.error}`
+          : `Ocena ćwiczenia: ${payload.gradingStatus.toUpperCase()} — ${payload.feedback}`,
+        hasError ? 'assertive' : 'polite',
+        hasError ? 'error' : 'success'
+      );
 
       if (!hasError && payload.gradingStatus === 'pass') {
         updateProgress((progress) => {
@@ -222,8 +230,7 @@
         ? renderErrorPanel(payload.error || 'Wystąpił błąd SQL.', 'Sprawdź składnię zapytania i spróbuj ponownie.')
         : renderTable(payload.columns || [], payload.rows || []);
     } catch (error) {
-      statusEl.className = 'status error';
-      statusEl.textContent = `Błąd sieci: ${error.message}`;
+      announceStatus(`Błąd sieci: ${error.message}`, 'assertive', 'error');
       resultArea.innerHTML = renderErrorPanel('Nie udało się połączyć z serwerem.', error.message || 'Sprawdź połączenie sieciowe i ponów próbę.');
     } finally {
       setLoading(false);
@@ -233,8 +240,7 @@
   runBtn.addEventListener('click', () => window.runQuery());
   resetBtn.addEventListener('click', () => {
     editor.setValue(LESSON_CONTEXT.starterQuery);
-    statusEl.className = 'status muted';
-    statusEl.textContent = 'Zapytanie zresetowane do wartości startowej.';
+    announceStatus('Zapytanie zresetowane do wartości startowej.', 'polite', 'muted');
     resultArea.innerHTML = '';
     metaEl.textContent = '';
   });
